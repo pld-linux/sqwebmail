@@ -43,6 +43,8 @@ BuildRequires:	libtool
 %{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	perl-base
 %{?with_pgsql:BuildRequires:	postgresql-devel}
+BuildRequires:	procps
+BuildRequires:	sysconftool
 PreReq:		rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	crondaemon
