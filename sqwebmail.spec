@@ -1,49 +1,41 @@
 #
+# TODO
+#	- tests
+#
 # Conditional build:
-%bcond_without	cram
 %bcond_without	ispell
-%bcond_without	ldap
-%bcond_without	mysql
-%bcond_without	pam
-%bcond_without	pgsql
-%bcond_without	pwd
 %bcond_without	ssl
-%bcond_without	userdb
 %bcond_with	pl
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	4.0.7
-Release:	4
+Version:	5.0.1
+Release:	0.5
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	656e5d22cecab535f57a24407d39cd55
+# Source0-md5:	43bdf4521e8512411da5dad53395ca68
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 %{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
 Patch0:		%{name}-authpam_patch
-Patch1:		%{name}-mysqlauth.patch
-Patch2:		%{name}-prowizorka.patch
-Patch3:		%{name}-maildir.patch
-Patch4:		%{name}-init.patch
-URL:		http://www.inter7.com/sqwebmail/
+Patch1:		%{name}-prowizorka.patch
+Patch2:		%{name}-maildir.patch
+Patch3:		%{name}-init.patch
+URL:		http://www.courier-mta.org/sqwebmail/
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	courier-authlib-devel
+BuildRequires:	db-devel
 BuildRequires:	expect
 BuildRequires:	fam-devel
-BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
 # perhaps only because of test sources written in C, but with ".C" extension(?)
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
-%{?with_mysql:BuildRequires:	mysql-devel}
-%{?with_ldap:BuildRequires:	openldap-devel}
-%{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	perl-base
-%{?with_pgsql:BuildRequires:	postgresql-devel}
 BuildRequires:	procps
 BuildRequires:	sysconftool
 PreReq:		rc-scripts
@@ -57,146 +49,29 @@ Requires:	mailcap
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define	_bindir			/usr/bin
+%define	_libexecdir		/usr/%{_lib}
+%define	_localstatedir		/var/spool/sqwebmail
+%define	_mandir			/usr/share/man
+%define	_sbindir		/usr/sbin
+
 %define	httpddir		/home/services/httpd
 %define	cgibindir		%{httpddir}/cgi-bin
-%define	imagedir		%{httpddir}/html/webmail
+%define	imagedir		%{_datadir}/sqwebmail/images
 %define	imageurl		/webmail
-
-%define	htmllibdir		/usr/share/sqwebmail
-%define	_localstatedir		/var/spool/sqwebmail
-
-%define	_prefix			%{htmllibdir}
-%define	_sbindir		/usr/sbin
-%define	_bindir			/usr/bin
-%define	_mandir			/usr/share/man
-%define	_libexecdir		/usr/%{_lib}/sqwebmail
+%define	_apache1dir		/etc/apache
+%define	_apache2dir		/etc/httpd
 
 %define	cacheowner		bin
 %define	sqwebmailowner		root
 %define	sqwebmailgroup		mail
-%define	sqwebmailperm		06555
+%define	sqwebmailperm		555
 
 %description
 SqWebMail is a Webmail CGI for Maildir mailboxes.
 
 %description -l pl
 SqWebMail jest klientem pocztowym CGI dla skrzynek Maildir.
-
-%package auth-ldap
-Summary:	SqWebMail LDAP authentication driver
-Summary(pl):	Sterownik uwierzytelnienia LDAP dla SqWebMaila
-Group:		Applications/Mail
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-ldap
-This package contains the necessary files to allow SqWebMail to
-authenticate from an LDAP directory. Install this package if you need
-the ability to use an LDAP directory for authentication.
-
-%description auth-ldap -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania poprzez LDAP.
-
-%package auth-mysql
-Summary:	SqWebMail MySQL authentication driver
-Summary(pl):	Sterownik uwierzytelnienia MySQL dla SqWebMaila
-Group:		Applications/Mail
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-mysql
-This package contains the necessary files to allow SqWebMail to
-authenticate using a MySQL database table. Install this package if you
-need the ability to use a MySQL database table for authentication.
-
-%description auth-mysql -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-tabeli w bazie MySQL.
-
-%package auth-pgsql
-Summary:	SqWebMail PostgreSQL authentication driver
-Summary(pl):	Sterownik uwierzytelnienia PostgreSQL dla SqWebMaila
-Group:		Applications/Mail
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-pgsql
-This package contains the necessary files to allow SqWebMail to
-authenticate using a PostgreSQL database table. Install this package
-if you need the ability to use a PostgreSQL database table for
-authentication.
-
-%description auth-pgsql -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-tabeli w bazie PostgreSQL.
-
-%package auth-userdb
-Summary:	SqWebMail userdb authentication driver
-Summary(pl):	Sterownik uwierzytelnienia userdb dla SqWebMaila
-Group:		Applications/Mail
-Obsoletes:	courier-imap-userdb
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-userdb
-This package contains the necessary files to allow SqWebMail to
-authenticate using a userdb file.
-
-%description auth-userdb -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-pliku userdb.
-
-%package auth-pam
-Summary:	SqWebMail pam authentication driver
-Summary(pl):	Sterownik uwierzytelnienia pam dla SqWebMaila
-Group:		Applications/Mail
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-pam
-This package contains the necessary files to allow SqWebMail to
-authenticate using a pam.
-
-%description auth-pam -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-biblioteki pam.
-
-%package auth-pwd
-Summary:	SqWebMail pwd authentication driver
-Summary(pl):	Sterownik uwierzytelnienia pwd dla SqWebMaila
-Group:		Applications/Mail
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-pwd
-This package contains the necessary files to allow SqWebMail to
-authenticates from the /etc/passwd file.
-
-%description auth-pwd -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-pliku /etc/passwd.
-
-%package auth-shadow
-Summary:	SqWebMail shadow authentication driver
-Summary(pl):	Sterownik uwierzytelnienia shadow dla SqWebMaila
-Group:		Applications/Mail
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-shadow
-This package contains the necessary files to allow SqWebMail to
-authenticates from the /etc/shadow file.
-
-%description auth-shadow -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-pliku /etc/shadow.
-
-%package auth-cram
-Summary:	SqWebMail cram authentication driver
-Summary(pl):	Sterownik uwierzytelnienia cram dla SqWebMaila
-Group:		Applications/Mail
-Requires:	%{name} = %{version}-%{release}
-
-%description auth-cram
-This package contains the necessary files to allow SqWebMail to
-authenticate using cram mechanism.
-
-%description auth-cram -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-mechanizmu cram.
 
 %package calendar
 Summary:	SqWebMail calendar
@@ -229,15 +104,8 @@ install %{SOURCE2} sqwebmail.init.in
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
-cd authlib
-%{__aclocal}
-%{__autoconf}
-%{__automake}
-cd ..
-
 rm -f missing
 %{__libtoolize}
 %{__aclocal}
@@ -245,26 +113,14 @@ rm -f missing
 %{__automake}
 
 %configure \
+	--with-db=db \
 	--sysconfdir=%{_sysconfdir}/sqwebmail \
 	--libexecdir=%{_libexecdir} \
 	--localstatedir=%{_localstatedir} \
 	--enable-cgibindir=%{cgibindir} \
-	%{?with_ldap:--with-authldap} \
-	%{?with_pam:--with-authpam} \
-	%{?with_pwd:--with-authpwd} \
-	%{?with_pwd:--with-authshadow} \
-	%{?with_cram:--with-authcram} \
-	%{?with_userdb:--with-authuserdb} \
-	%{?with_userdb:--with-userdb=%{_sysconfdir}/sqwebmail/userdb } \
-	%{?with_pgsql:--with-authpgsql} \
-	%{?with_mysql:--without-authvchkpw} \
-	%{?with_mysql:--enable-mysql=y} \
-	%{?with_mysql:--with-mysql-include=/usr/include/mysql} \
-	%{?with_mysql:--with-mysql-libs=/usr/%{_lib}} \
 	%{?with_ssl:--enable-https} \
 	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
 	--enable-mimetypes=/etc/mime.types \
-	--enable-imageurl=%{imagedir} \
 	--enable-imagedir=%{imagedir} \
 	--enable-imageurl=%{imageurl} \
 	--with-cachedir=%{_localstatedir}/tmp \
@@ -275,86 +131,64 @@ rm -f missing
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sqwebmail/{shared,shared.tmp},pam.d} \
-	$RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,cron.hourly,rc.d/init.d} \
-%{?with_pl:$RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl}
+	$RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,cron.hourly,rc.d/init.d,httpd} \
+%{?with_pl:$RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/pl-pl}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
-install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
-
-%if %{with ldap}
-install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
-mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc
-%endif
-
-%if %{with mysql}
-install authlib/authdaemond.mysql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.mysql
-mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc
-%endif
-
-%if %{with pgsql}
-install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.pgsql
-mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc
-%endif
-
-%if %{with userdb}
-install authlib/authuserdb $RPM_BUILD_ROOT%{_libexecdir}/authlib/authuserdb
-%endif
-
-%if %{with pam}
-install authlib/authpam $RPM_BUILD_ROOT%{_libexecdir}/authlib/authpam
-install -m 0444 sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/webmail
-install -m 0444 sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/calendar
-%endif
-
-%if %{with pwd}
-install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
-%endif
-
-%if %{with shadow}
-install authlib/authshadow $RPM_BUILD_ROOT%{_libexecdir}/authlib/authshadow
-%endif
-
-%if %{with cram}
-install authlib/authcram $RPM_BUILD_ROOT%{_libexecdir}/authlib/authcram
-%endif
-
-install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
 install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install sqwebmail.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
 %if %{with pl}
 tar zxf %{SOURCE3}
-install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl
+install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/pl-pl
 %endif
 
 rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
-mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc
-mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook
 cp pcp/README.html pcp_README.html
 echo net >$RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/calendarmode
 
 %if %{with ispell}
-touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
+touch $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/en/ISPELLDICT
 %endif
 
 # make config file
-./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/sqwebmaild.dist
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/sqwebmaild.dist
+./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/*.dist
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/*.dist
 
 # delete man pages in conflict with courier-imap
-rm -f	$RPM_BUILD_ROOT%{_mandir}/man8/deliverquota* \
-	$RPM_BUILD_ROOT%{_mandir}/man7/auth*
-rm -f	$RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
+rm -f $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota*
+rm -f $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
+
+# pam
+cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/webmail
+
+# for apache
+echo "Alias /webmail %{imagedir}" >apache-%{name}.conf
+install apache-%{name}.conf $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/apache-%{name}.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
-[ -L %{htmllibdir}/html/en ] || ln -fs en-us %{htmllibdir}/html/en
+# apache1
+if [ -d %{_apache1dir}/conf.d ]; then
+	ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache1dir}/conf.d/99_%{name}.conf
+	if [ -f /var/lock/subsys/apache ]; then
+		/etc/rc.d/init.d/apache restart 1>&2
+	fi
+fi
+# apache2
+if [ -d %{_apache2dir}/httpd.conf ]; then
+	ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache2dir}/httpd.conf/99_%{name}.conf
+	if [ -f /var/lock/subsys/httpd ]; then
+		/etc/rc.d/init.d/httpd restart 1>&2
+	fi
+fi
+
+[ -L %{_datadir}/sqwebmail/html/en ] || ln -fs en-us %{_datadir}/sqwebmail/html/en
 /sbin/chkconfig --add sqwebmail
 if [ -f /var/lock/subsys/sqwebmail ]; then
 	/etc/rc.d/init.d/sqwebmail restart 1>&2
@@ -364,11 +198,27 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
+	umask 027
+	# apache1
+	if [ -d %{_apache1dir}/conf.d ]; then
+		rm -f %{_apache1dir}/conf.d/99_%{name}.conf
+		if [ -f /var/lock/subsys/apache ]; then
+			/etc/rc.d/init.d/apache restart 1>&2
+		fi
+	fi
+	# apache2
+	if [ -d %{_apache2dir}/httpd.conf ]; then
+		rm -f %{_apache2dir}/httpd.conf/99_%{name}.conf
+		if [ -f /var/lock/subsys/httpd ]; then
+			/etc/rc.d/init.d/httpd restart 1>&2
+		fi
+	fi
+
 	/sbin/chkconfig --del sqwebmail
 	if [ -f /var/lock/subsys/sqwebmail ]; then
 		/etc/rc.d/init.d/sqwebmail stop 1>&2
 	fi
-	[ ! -L %{htmllibdir}/html/en ] || rm -f %{htmllibdir}/html/en
+	[ ! -L %{_datadir}/sqwebmail/html/en ] || rm -f %{_datadir}/sqwebmail/html/en
 fi
 
 %post calendar
@@ -398,11 +248,11 @@ if [ "$1" = "0" ]; then
 fi
 
 %post pl_html
-[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
+[ -L %{_datadir}/sqwebmail/html/pl ] || ln -fs pl-pl %{_datadir}/sqwebmail/html/pl
 echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 
 %preun pl_html
-[ ! -L %{htmllibdir}/html/pl ] || rm -f %{htmllibdir}/html/pl
+[ ! -L %{_datadir}/sqwebmail/html/pl ] || rm -f %{_datadir}/sqwebmail/html/pl
 
 %files
 %defattr(644,root,root,755)
@@ -411,24 +261,13 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %doc maildir/README*.html gpglib/README.html
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
 
-%{imagedir}
-%attr(755,root,root) %{_sbindir}/courierlogger
 %attr(755,root,root) %{_sbindir}/webgpg
 %attr(755,root,root) %{_sbindir}/sharedindexinstall
 %attr(755,root,root) %{_sbindir}/sharedindexsplit
 
-%dir %{_libexecdir}
-%dir %{_libexecdir}/authlib
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemon
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemond
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.plain
-%attr(755,root,root) %{_libexecdir}/authlib/authsystem.passwd
 %dir %{_libexecdir}/sqwebmail
-%attr(755,root,root) %{_libexecdir}/sqwebmail/authenumerate
 %attr(755,root,root) %{_libexecdir}/sqwebmail/deliverquota
 %attr(755,root,root) %{_libexecdir}/sqwebmail/maildirmake
-%attr(755,root,root) %{_libexecdir}/sqwebmail/makedatprog
 %attr(755,root,root) %{_libexecdir}/sqwebmail/makemime
 %attr(755,root,root) %{_libexecdir}/sqwebmail/reformime
 %attr(755,root,root) %{_libexecdir}/sqwebmail/sqwebmaild
@@ -436,98 +275,32 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %dir %{_sysconfdir}/sqwebmail
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared.tmp
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/sqwebmaild
-%dir %{htmllibdir}
-%dir %{htmllibdir}/html
-%dir %{htmllibdir}/html/en-us
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/CHARSET
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/LANGUAGE
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/LANGUAGE_PREF
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/LOCALE
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/TIMEZONELIST
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/ISPELLDICT
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/apache-%{name}.conf
+%dir %{_datadir}/sqwebmail
+%dir %{_datadir}/sqwebmail/html
+%dir %{_datadir}/sqwebmail/html/en-us
+%{imagedir}
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/CHARSET
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE_PREF
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LOCALE
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/TIMEZONELIST
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/ISPELLDICT
 %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
-%{htmllibdir}/html/en-us/*.html
-%{htmllibdir}/html/en-us/*.txt
-%attr(755,root,root) %{htmllibdir}/sysconftool
-%attr(755,root,root) %{htmllibdir}/ldapsearch
-%attr(755,root,root) %{htmllibdir}/webgpg
-%attr(755,root,root) %{htmllibdir}/sendit.sh
-%attr(755,bin,root) %{htmllibdir}/cleancache.pl
+%{_datadir}/sqwebmail/html/en-us/*.html
+%{_datadir}/sqwebmail/html/en-us/*.txt
+%attr(755,root,root) %{_datadir}/sqwebmail/ldapsearch
+%attr(755,root,root) %{_datadir}/sqwebmail/webgpg
+%attr(755,root,root) %{_datadir}/sqwebmail/sendit.sh
+%attr(755,bin,root) %{_datadir}/sqwebmail/cleancache.pl
 
 %attr(754,root,root) /etc/rc.d/init.d/sqwebmail
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
 
-%attr(771,daemon,daemon) %dir %{_localstatedir}
-%attr(770,daemon,daemon) %dir %{_localstatedir}/authdaemon
+%attr(771,root,daemon) %dir %{_localstatedir}
 %attr(700,%{cacheowner},bin) %dir %{_localstatedir}/tmp
-
-%if %{with ldap}
-%files auth-ldap
-%defattr(644,root,root,755)
-%doc authlib/authldap.schema authlib/README.ldap
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
-%attr(660,daemon,daemon) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authldaprc
-%endif
-
-%if %{with mysql}
-%files auth-mysql
-%defattr(644,root,root,755)
-%doc authlib/README.authmysql.html authlib/README.authmysql.myownquery
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
-%attr(660,daemon,daemon) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmysqlrc
-%endif
-
-%if %{with pgsql}
-%files auth-pgsql
-%defattr(644,root,root,755)
-%doc authlib/README.authpostgres.html
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
-%attr(660,daemon,daemon) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authpgsqlrc
-%endif
-
-%if %{with userdb}
-%files auth-userdb
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libexecdir}/authlib/authuserdb
-%attr(755,root,root) %{_sbindir}/makeuserdb
-%attr(755,root,root) %{_sbindir}/pw2userdb
-%attr(755,root,root) %{_sbindir}/userdb
-%attr(755,root,root) %{_sbindir}/userdbpw
-%attr(755,root,root) %{_sbindir}/vchkpw2userdb
-%{_mandir}/man8/makeuserdb.8*
-%{_mandir}/man8/pw2userdb.8*
-%{_mandir}/man8/userdb.8*
-%{_mandir}/man8/userdbpw.8*
-%{_mandir}/man8/vchkpw2userdb.8*
-%endif
-
-%if %{with pam}
-%files auth-pam
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libexecdir}/authlib/authpam
-%endif
-
-%if %{with pwd}
-%files auth-pwd
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
-%endif
-
-%if %{with shadow}
-%files auth-shadow
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libexecdir}/authlib/authshadow
-%endif
-
-%if %{with cram}
-%files auth-cram
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libexecdir}/authlib/authcram
-%endif
 
 %files calendar
 %defattr(644,root,root,755)
@@ -542,13 +315,13 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %if %{with pl}
 %files pl_html
 %defattr(644,root,root,755)
-%dir %{htmllibdir}/html/pl-pl
-%{htmllibdir}/html/pl-pl/*.html
-%{htmllibdir}/html/pl-pl/*.txt
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/CHARSET
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE_PREF
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LOCALE
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/TIMEZONELIST
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/ISPELLDICT
+%dir %{_datadir}/sqwebmail/html/pl-pl
+%{_datadir}/sqwebmail/html/pl-pl/*.html
+%{_datadir}/sqwebmail/html/pl-pl/*.txt
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/CHARSET
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/LANGUAGE
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/LANGUAGE_PREF
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/LOCALE
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/TIMEZONELIST
+%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/ISPELLDICT
 %endif

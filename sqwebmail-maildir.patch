@@ -15,9 +15,9 @@ diff -Nur old/pcp/pcpd.c new/pcp/pcpd.c
  		maildir_cache_cancel();
  		exit(1);
 diff -Nur old/sqwebmail/auth.c new/sqwebmail/auth.c
---- old/sqwebmail/auth.c	2004-05-09 03:32:01.000000000 +0000
-+++ new/sqwebmail/auth.c	2004-06-01 22:25:57.000000000 +0000
-@@ -82,7 +82,7 @@
+--- old/sqwebmail/auth.c	2004-11-21 03:38:35.000000000 +0000
++++ new/sqwebmail/auth.c	2004-12-20 21:46:53.000000000 +0000
+@@ -79,7 +79,7 @@
  	if (!maildir || !*maildir)
  		maildir=getenv("MAILDIRPATH");
  	if (!maildir || !*maildir)
@@ -26,15 +26,6 @@ diff -Nur old/sqwebmail/auth.c new/sqwebmail/auth.c
  	if (chdir(maildir))	return (-1);
  	maildir_loginexec();
  	return (0);
-@@ -111,7 +111,7 @@
- struct stat stat_buf;
- 
- 	if (!p || !*p)	p=getenv("MAILDIRPATH");
--	if (!p || !*p)	p="Maildir";
-+	if (!p || !*p)	p="Mail/Maildir";
- 
- 	buf=malloc(strlen(h)+strlen(p)+sizeof(PASSFILE)+100);
- 
 diff -Nur old/sqwebmail/sqwebmaild.dist.in new/sqwebmail/sqwebmaild.dist.in
 --- old/sqwebmail/sqwebmaild.dist.in	2004-05-09 03:32:01.000000000 +0000
 +++ new/sqwebmail/sqwebmaild.dist.in	2004-06-01 22:22:10.000000000 +0000
