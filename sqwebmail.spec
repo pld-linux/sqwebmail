@@ -460,7 +460,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %defattr(644,root,root,755)
 %doc authlib/authldap.schema authlib/README.ldap
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
-%{_sysconfdir}/sqwebmail/authldaprc
+%attr(660,daemon,daemon) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authldaprc
 %endif
 
 %if %{with mysql}
@@ -468,7 +468,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %defattr(644,root,root,755)
 %doc authlib/README.authmysql.html authlib/README.authmysql.myownquery
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
-%{_sysconfdir}/sqwebmail/authmysqlrc
+%attr(660,daemon,daemon) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmysqlrc
 %endif
 
 %if %{with pgsql}
@@ -476,7 +476,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %defattr(644,root,root,755)
 %doc authlib/README.authpostgres.html
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
-%{_sysconfdir}/sqwebmail/authpgsqlrc
+%attr(660,daemon,daemon) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
 %if %{with userdb}
