@@ -380,7 +380,7 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/ISPELLDICT
 %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
 
-%attr(755,root,root) /etc/rc.d/init.d/sqwebmail
+%attr(754,root,root) /etc/rc.d/init.d/sqwebmail
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
 
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
