@@ -289,8 +289,8 @@ install authlib/authuserdb $RPM_BUILD_ROOT%{_libexecdir}/authlib/authuserdb
 
 %if %{with pam}
 install authlib/authpam $RPM_BUILD_ROOT%{_libexecdir}/authlib/authpam
-install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
-install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
+install -m 0444 sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/webmail
+install -m 0444 sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/calendar
 %endif
 
 %if %{with pwd}
