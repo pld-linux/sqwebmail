@@ -23,7 +23,7 @@ Requires:	gnupg >= 1.0.4
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
-%{?_with_mysql:BuildReq:     mysql-devel}
+%{?_with_mysql:BuildRequires:     mysql-devel}
 BuildRequires:	openldap-devel
 BuildRequires:	pam-devel
 BuildRequires:	perl
