@@ -26,11 +26,11 @@ Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 Patch2:		%{name}-prowizorka.patch
 Patch3:		%{name}-maildir.patch
-Patch4:         %{name}-no_res_query.patch
-Patch5: 	%{name}-init.patch
+Patch4:		%{name}-no_res_query.patch
+Patch5:		%{name}-init.patch
 URL:		http://www.inter7.com/sqwebmail/
-BuildRequires:  autoconf
-BuildRequires:  automake
+BuildRequires:	autoconf
+BuildRequires:	automake
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
@@ -53,25 +53,25 @@ Requires:	perl
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define httpddir                /home/services/httpd
-%define cgibindir               %{httpddir}/cgi-bin
-%define imagedir                %{httpddir}/html/webmail
-%define imageurl                /webmail
+%define	httpddir		/home/services/httpd
+%define	cgibindir		%{httpddir}/cgi-bin
+%define	imagedir		%{httpddir}/html/webmail
+%define	imageurl		/webmail
 
-%define htmllibdir              /usr/share/sqwebmail
-%define cachedir                /var/cache/sqwebmail
-%define authdaemonvar		/var/cache/authdaemonvar
+%define	htmllibdir		/usr/share/sqwebmail
+%define	cachedir		/var/cache/sqwebmail
+%define	authdaemonvar		/var/cache/authdaemonvar
 
-%define _prefix                 %{htmllibdir}
-%define _sbindir		/usr/sbin
-%define _bindir			/usr/bin
-%define _mandir			/usr/share/man
-%define _libexecdir             /usr/%{_lib}/sqwebmail
+%define	_prefix			%{htmllibdir}
+%define	_sbindir		/usr/sbin
+%define	_bindir			/usr/bin
+%define	_mandir			/usr/share/man
+%define	_libexecdir		/usr/%{_lib}/sqwebmail
 
-%define cacheowner              bin
-%define sqwebmailowner          root
-%define sqwebmailgroup          mail
-%define sqwebmailperm           06555
+%define	cacheowner		bin
+%define	sqwebmailowner		root
+%define	sqwebmailgroup		mail
+%define	sqwebmailperm		06555
 
 %description
 SqWebMail is a Webmail CGI for Maildir mailboxes.
@@ -273,15 +273,15 @@ rm -f missing
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
 	   $RPM_BUILD_ROOT/etc/{pam.d,rc.d/init.d,sysconfig,cron.hourly,sqwebmail} \
-           $RPM_BUILD_ROOT%{_libexecdir}/authlib \
-           $RPM_BUILD_ROOT%{_sbindir} \
-           $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
-           $RPM_BUILD_ROOT%{httpddir} \
+	   $RPM_BUILD_ROOT%{_libexecdir}/authlib \
+	   $RPM_BUILD_ROOT%{_sbindir} \
+	   $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
+	   $RPM_BUILD_ROOT%{httpddir} \
 %{?with_pl:$RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl} \
-           $RPM_BUILD_ROOT%{cgibindir} \
-           $RPM_BUILD_ROOT%{imagedir} \
-           $RPM_BUILD_ROOT%{_prefix} \
-           $RPM_BUILD_ROOT%{cachedir} \
+	   $RPM_BUILD_ROOT%{cgibindir} \
+	   $RPM_BUILD_ROOT%{imagedir} \
+	   $RPM_BUILD_ROOT%{_prefix} \
+	   $RPM_BUILD_ROOT%{cachedir} \
 	   $RPM_BUILD_ROOT%{authdaemonvar}
 
 %{__make} install \
