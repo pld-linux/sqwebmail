@@ -63,7 +63,6 @@ case "$1" in
 		# Stop daemons.
 		msg_stopping sqwebmail
 		killproc sqwebmail
-		RETVAL=$?
 		rm -f /var/lock/subsys/sqwebmail
 	else
 		msg_not_running sqwebmail
