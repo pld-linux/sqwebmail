@@ -1,12 +1,8 @@
-
-# auth vchkpwd waits for vpopmail to be made
-%define	_without_vchkpwd 	1
-
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	3.5.0
-Release:	0.8
+Release:	0.9
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -33,7 +29,6 @@ BuildRequires:	gnupg >= 1.0.4
 %{!?_without_ldap:BuildRequires:	openldap-devel}
 %{!?_without_pgsql:BuildRequires:	postgresql-devel}
 %{!?_without_pam:BuildRequires:		pam-devel}
-%{!?_without_vchkpwd:BuildRequires:	vpopmail}
 BuildRequires:	perl
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -82,7 +77,6 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania poprzez LDAP.
 Summary:	SqWebMail MySQL authentication driver
 Summary(pl):	Sterownik uwierzytelnienia MySQL dla SqWebMaila
 Group:		Applications/Mail
-Obsoletes:      %{name}-auth-vchkpwd
 Requires:	%{name} = %{version}
 
 %description auth-mysql
@@ -180,22 +174,6 @@ authenticate using cram mechanism.
 %description auth-cram -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 mechanizmu cram.
-
-%package auth-vchkpwd
-Summary:        SqWebMail vchkpwd authentication driver
-Summary(pl):    Sterownik uwierzytelnienia vchkpwd dla SqWebMaila
-Group:          Applications/Mail
-Obsoletes:      %{name}-auth-mysql
-Requires:       %{name} = %{version}
-
-%description auth-vchkpwd
-This package contains the necessary files to allow SqWebMail to
-authenticate using a vchkpwd.
-
-%description auth-vchkpwd -l pl
-Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
-vchkpwd
-
 
 %package        calendar
 Summary:        SqWebMail calendar
@@ -316,10 +294,6 @@ install authlib/authshadow $RPM_BUILD_ROOT%{_libexecdir}/authlib/authshadow
 
 %if 0%{!?_without_cram:1}
 install authlib/authcram $RPM_BUILD_ROOT%{_libexecdir}/authlib/authcram
-%endif
-
-%if 0%{!?_without_vchkpwd:1}
-install authlib/authvchkpwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authvchkpwd
 %endif
 
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
@@ -483,14 +457,6 @@ fi
 %attr(755,root,root) %{_libexecdir}/authlib/authcram
 %{_mandir}/man7/authcram.*
 %endif
-
-%if 0%{!?_without_vchkpwd:1}
-%files auth-vchkpwd
-%defattr(644,root,root,755) 
-%attr(755,root,root) %{_libexecdir}/authlib/authvchkpwd
-#%{_mandir}/man7/authvchkpwd.*
-%endif
-
 
 %files calendar
 %defattr(644,root,root,755)
