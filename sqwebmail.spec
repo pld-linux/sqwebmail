@@ -14,7 +14,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	4.0.4
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -285,7 +285,6 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sqwebmail/shared,pam.d,rc.d/init.d} \
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
 install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
 
@@ -347,8 +346,9 @@ touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
 %endif
 
 # delete man pages in conflict with courier-imap
-rm -f 	$RPM_BUILD_ROOT%{_mandir}/man8/deliverquota* \
+rm -f	$RPM_BUILD_ROOT%{_mandir}/man8/deliverquota* \
 	$RPM_BUILD_ROOT%{_mandir}/man7/auth*
+rm -f	$RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -372,19 +372,25 @@ if [ "$1" = "0" ]; then
 fi
 
 %post calendar
-if ps -A |grep -q pcpd; then
-	%{_libexecdir}/sqwebmail/pcpd stop
-	%{_libexecdir}/sqwebmail/pcpd start
+if [ -f /var/run/sqwebmaild.pid.pcp ]; then
+	/etc/rc.d/init.d/sqwebmail restart 1>&2
 else
-	echo
-	echo Type "%{_libexecdir}/sqwebmail/pcpd start" to start calendar
-	echo
+	if [ -f /var/lock/subsys/sqwebmail ]; then
+	    echo
+	    echo Type "/etc/rc.d/init.d/sqwebmail restart" to start sqwebmail with calendar
+	    echo
+	else
+	    echo
+	    echo Type "/etc/rc.d/init.d/sqwebmail start" to start sqwebmail with calendar
+	    echo
+	fi
 fi
 	
 %preun calendar
 if [ "$1" = "0" ]; then
-	if ps -A |grep -q pcpd; then
-		%{_libexecdir}/sqwebmail/pcpd stop
+	if [ -f /var/run/sqwebmaild.pid.pcp ]; then
+	    %{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -stop
+	    rm -f /var/run/sqwebmaild.pid.pcp
 	fi
 fi
 
@@ -403,6 +409,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
 
 %{imagedir}
+%attr(755,root,root) %{_sbindir}/courierlogger
 %attr(755,root,root) %{_sbindir}/webgpg
 %attr(755,root,root) %{_sbindir}/sharedindexinstall
 %attr(755,root,root) %{_sbindir}/sharedindexsplit
@@ -426,9 +433,9 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %dir %{_sysconfdir}/sqwebmail
 %attr(750,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/sqwebmaild
 %dir %{htmllibdir}
 %dir %{htmllibdir}/html
 %dir %{htmllibdir}/html/en-us
@@ -446,7 +453,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,root,root) %{htmllibdir}/webgpg
 %attr(755,root,root) %{htmllibdir}/sendit.sh
 %attr(755,bin,root) %{htmllibdir}/cleancache.pl
-%{htmllibdir}/authmodulelist
 
 %attr(754,root,root) /etc/rc.d/init.d/sqwebmail
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
