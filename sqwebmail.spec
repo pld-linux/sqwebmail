@@ -2,7 +2,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	3.5.0
-Release:	0.4
+Release:	0.5
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -18,8 +18,10 @@ Requires:	crondaemon
 Requires:	expect
 Requires:	gnupg >= 1.0.4
 Requires:	apache
+Requires:	mailcap
+%{!?_without_ispell:Requires: ispell}
 BuildRequires:	expect
-%{!?_without_userdb:BuildRequires:	gdbm-devel}
+BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
 %{!?_without_mysql:BuildRequires:	mysql-devel}
 %{!?_without_ldap:BuildRequires:	openldap-devel}
@@ -115,6 +117,19 @@ authenticate using a userdb file.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku userdb.
 
+%package        calendar
+Summary:        SqWebMail calendar
+Summary(pl):    Kalendarz dla SqWebMaila
+Group:          Applications/Mail
+Requires:       %{name} = %{version}
+
+%description calendar
+Calendar
+
+%description calendar -l pl
+Kalendarz
+
+
 %prep
 %setup -q
 %patch0 -p1
@@ -134,6 +149,8 @@ pliku userdb.
 %{!?_without_mysql: --with-mysql-include=/usr/include/mysql} \
 %{!?_without_mysql: --with-mysql-libs=/usr/lib} \
 %{!?_without_ssl: --enable-https} \
+%{!?_without_ispell:	--with-ispell=/usr/bin/ispell} \
+	   --enable-mimetypes=/etc/mime.types \
 	   --enable-imageurl=%{imagedir} \
 	   --with-cachedir=%{cachedir} \
 	   --enable-imagedir=%{imagedir} \
@@ -163,9 +180,9 @@ install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
 
 install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
-#install configlist $RPM_BUILD_ROOT%{htmllibdir}/configlist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
 install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
+
 
 %if 0%{!?_without_ldap:1}
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
@@ -185,6 +202,7 @@ install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaem
 
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
 install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
+install pcpd $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
@@ -192,6 +210,8 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
 tar zxf %{SOURCE3}
 install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{htmllibdir}/pl-pl
+
+rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
 
 cp pcp/README.html pcp_README.html
 
@@ -221,7 +241,7 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS sqwebmail/BUGS INSTALL INSTALL.vchkpw NEWS README sqwebmail/SECURITY sqwebmail/TODO gpglib/README.html
-%doc sqwebmail/BUGS.html INSTALL.html NEWS.html README.html sqwebmail/SECURITY.html sqwebmail/TODO.html sqwebmail/ChangeLog pcp_README.html
+%doc sqwebmail/BUGS.html INSTALL.html NEWS.html README.html sqwebmail/SECURITY.html sqwebmail/TODO.html sqwebmail/ChangeLog
 %doc maildir/README*.html
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
 
@@ -251,8 +271,6 @@ fi
 
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
 %dir %{authdaemonvar}
-#%{_mandir}/man?/*
-%{_mandir}/man1/maildirmake.*
 %{_mandir}/man7/authlib.*
 %{_mandir}/man7/authcram.*
 %{_mandir}/man7/authdaemon.*
@@ -303,3 +321,8 @@ fi
 %{_mandir}/man8/userdbpw.8.gz
 %{_mandir}/man8/vchkpw2userdb.8
 %endif
+
+%files calendar
+%defattr(644,root,root,755)
+%doc pcp_README.html
+%{_sbindir}/pcpd
