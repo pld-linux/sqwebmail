@@ -17,8 +17,9 @@ Requires(post,preun):	/sbin/chkconfig
 Requires:	crondaemon
 Requires:	expect
 Requires:	gnupg >= 1.0.4
+Requires:	apache
 BuildRequires:	expect
-BuildRequires:	gdbm-devel
+%{!?_without_userdb:BuildRequires:	gdbm-devel}
 BuildRequires:	gnupg >= 1.0.4
 %{!?_without_mysql:BuildRequires:	mysql-devel}
 %{!?_without_ldap:BuildRequires:	openldap-devel}
@@ -99,6 +100,20 @@ authentication.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 tabeli w bazie PostgreSQL.
 
+%package        userdb
+Summary:        SqWebMail userdb authentication driver
+Summary(pl):    Sterownik uwierzytelnienia userdb dla SqWebMaila
+Group:          Applications/Mail
+Requires:       %{name} = %{version}
+
+%description userdb
+This package contains the necessary files to allow SqWebMail to
+authenticate using a userdb file.
+
+%description userdb -l pl
+Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
+pliku userdb.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -110,6 +125,7 @@ tabeli w bazie PostgreSQL.
 	   --libexecdir=%{_libexecdir} \
 	   --enable-cgibindir=%{cgibindir} \
 %{!?_without_ldap: --with-authldap} \
+%{!?_without_userdb: --with-dbauthuserdb } \
 %{!?_without_pgsql: --with-authpgsql} \
 %{!?_without_mysql: --without-authvchkpw} \
 %{!?_without_mysql: --enable-mysql=y} \
@@ -160,6 +176,10 @@ install authlib/authdaemond.mysql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaem
 
 %if 0%{!?_without_pgsql:1}
 install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.pgsql
+%endif
+
+%if 0%{!?_without_userdb:1}
+install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.userdb
 %endif
 
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
@@ -236,6 +256,7 @@ fi
 %if 0%{!?_without_ldap:1}
 %files ldap
 %defattr(644,root,root,755)
+%doc authlib/authldap.schema
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
 %{_sysconfdir}/sqwebmail/authldaprc.dist
 %endif
@@ -252,4 +273,11 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
 %{_sysconfdir}/sqwebmail/authpgsqlrc.dist
+%endif
+
+%if 0%{!?_without_userdb:1}
+%files userdb
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.userdb
+#%{_sysconfdir}/sqwebmail/authpgsqlrc.dist
 %endif
