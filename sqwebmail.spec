@@ -24,6 +24,8 @@ Source2:	%{name}.init
 %{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
+Patch2:		%{name}-prowizorka.patch
+Patch3:		%{name}-maildir.patch
 URL:		http://www.inter7.com/sqwebmail/
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
@@ -47,7 +49,7 @@ Requires:	perl
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define httpddir                /srv/httpd
+%define httpddir                /home/services/httpd
 %define cgibindir               %{httpddir}/cgi-bin
 %define imagedir                %{httpddir}/html/webmail
 %define imageurl                /webmail
@@ -217,8 +219,11 @@ Polskie t³umaczenie interfejsu.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
+cp -f /usr/share/automake/config.sub .
 %configure \
 	--sysconfdir=%{_sysconfdir}/sqwebmail \
 	--libexecdir=%{_libexecdir} \
@@ -320,6 +325,7 @@ rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook
 cp pcp/README.html pcp_README.html
+echo -n >$RPM_BUILD_ROOT%{_sysconfdir}/calendarmode
 
 %if %{with ispell}
 touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
@@ -337,10 +343,6 @@ else
 	echo "Run \"/etc/rc.d/init.d/sqwebmail start\" to start sqwebmail daemon."
 fi
 
-%post pl_html
-[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
-echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
-
 %preun
 if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del sqwebmail
@@ -349,6 +351,10 @@ if [ "$1" = "0" ]; then
 	fi
 	[ ! -L %{htmllibdir}/html/en ] || rm -f %{htmllibdir}/html/en
 fi
+
+%post pl_html
+[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
+echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 
 %preun pl_html
 [ ! -L %{htmllibdir}/html/pl ] || rm -f %{htmllibdir}/html/pl
@@ -394,7 +400,7 @@ fi
 %attr(755,root,root) %{htmllibdir}/ldapsearch
 %attr(755,root,root) %{htmllibdir}/webgpg
 %attr(755,root,root) %{htmllibdir}/sendit.sh
-%{htmllibdir}/cleancache.pl
+%attr(755,bin,root) %{htmllibdir}/cleancache.pl
 %{htmllibdir}/authmodulelist
 
 %attr(754,root,root) /etc/rc.d/init.d/sqwebmail
@@ -479,7 +485,8 @@ fi
 %files calendar
 %defattr(644,root,root,755)
 %doc pcp_README.html
-%{_sbindir}/pcpd
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/calendarmode
+%attr(755,root,root) %{_sbindir}/pcpd
 
 %if %{with pl}
 %files pl_html
