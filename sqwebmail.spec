@@ -12,7 +12,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	5.0.1
-Release:	0.1
+Release:	0.5
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -28,9 +28,9 @@ URL:		http://www.courier-mta.org/sqwebmail/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	courier-authlib-devel
+BuildRequires:	db-devel
 BuildRequires:	expect
 BuildRequires:	fam-devel
-BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
 # perhaps only because of test sources written in C, but with ".C" extension(?)
 BuildRequires:	libstdc++-devel
@@ -65,7 +65,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define	cacheowner		bin
 %define	sqwebmailowner		root
 %define	sqwebmailgroup		mail
-%define	sqwebmailperm		06555
+%define	sqwebmailperm		555
 
 %description
 SqWebMail is a Webmail CGI for Maildir mailboxes.
@@ -113,6 +113,7 @@ rm -f missing
 %{__automake}
 
 %configure \
+	--with-db=db \
 	--sysconfdir=%{_sysconfdir}/sqwebmail \
 	--libexecdir=%{_libexecdir} \
 	--localstatedir=%{_localstatedir} \
@@ -259,7 +260,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %doc sqwebmail/BUGS.html INSTALL.html README.html sqwebmail/SECURITY.html sqwebmail/TODO.html sqwebmail/ChangeLog
 %doc maildir/README*.html gpglib/README.html
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
-
 
 %attr(755,root,root) %{_sbindir}/webgpg
 %attr(755,root,root) %{_sbindir}/sharedindexinstall
