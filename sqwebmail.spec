@@ -264,7 +264,8 @@ rm -f missing
 	--enable-imagedir=%{imagedir} \
 	--enable-imageurl=%{imageurl} \
 	--with-cacheowner=%{cacheowner} \
-	--with-authdaemonvar=%{authdaemonvar}
+	--with-authdaemonvar=%{authdaemonvar} \
+	--with-mailer=%{_sbindir}/sendmail
 %{__make}
 
 %install
