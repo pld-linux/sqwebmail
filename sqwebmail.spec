@@ -1,16 +1,16 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	3.6.1
+Version:	3.6.2
 Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	e0bd529a28798dcc9783377ddabdac6e
+# Source0-md5:	7e5c19c4c1ba86e0c96408d5674c7f90
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
-# Source3-md5:	702b4075c7e8b6ae71c895a8bb803aa9
+# Source3-md5:	90d67b405d5e9d617c9c60c88aa4acec
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 URL:		http://www.inter7.com/sqwebmail/
@@ -19,11 +19,11 @@ BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
 # perhaps only because of test sources written in C, but with ".C" extension(?)
 BuildRequires:	libstdc++-devel
-%{!?_without_mysql:BuildRequires:	mysql-devel}
-%{!?_without_ldap:BuildRequires:	openldap-devel}
-%{!?_without_pam:BuildRequires:		pam-devel}
+%{?with_mysql:BuildRequires:	mysql-devel}
+%{?with_ldap:BuildRequires:	openldap-devel}
+%{?with_pam:BuildRequires:		pam-devel}
 BuildRequires:	perl-base
-%{!?_without_pgsql:BuildRequires:	postgresql-devel}
+%{?with_pgsql:BuildRequires:	postgresql-devel}
 PreReq:		rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	crondaemon
@@ -32,8 +32,8 @@ Requires:	gnupg >= 1.0.4
 Requires:	apache
 Requires:	mailcap
 Requires:	perl
-%{!?_without_ispell:Requires:	ispell}
-%{!?_without_ssl:Requires:	apache-mod_ssl}
+%{?with_ispell:Requires:	ispell}
+%{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define httpddir                /home/services/httpd
@@ -212,20 +212,20 @@ Polskie t³umaczenie interfejsu.
 	--sysconfdir=%{_sysconfdir}/sqwebmail \
 	--libexecdir=%{_libexecdir} \
 	--enable-cgibindir=%{cgibindir} \
-	%{!?_without_ldap:--with-authldap} \
-	%{!?_without_pam:--with-authpam} \
-	%{!?_without_pwd:--with-authpwd} \
-	%{!?_without_pwd:--with-authshadow} \
-	%{!?_without_cram:--with-authcram} \
-	%{!?_without_userdb:--with-authuserdb} \
-	%{!?_without_userdb:--with-userdb=%{_sysconfdir}/sqwebmail/userdb } \
-	%{!?_without_pgsql:--with-authpgsql} \
-	%{!?_without_mysql:--without-authvchkpw} \
-	%{!?_without_mysql:--enable-mysql=y} \
-	%{!?_without_mysql:--with-mysql-include=/usr/include/mysql} \
-	%{!?_without_mysql:--with-mysql-libs=/usr/lib} \
-	%{!?_without_ssl:--enable-https} \
-	%{!?_without_ispell:--with-ispell=/usr/bin/ispell} \
+	%{?with_ldap:--with-authldap} \
+	%{?with_pam:--with-authpam} \
+	%{?with_pwd:--with-authpwd} \
+	%{?with_pwd:--with-authshadow} \
+	%{?with_cram:--with-authcram} \
+	%{?with_userdb:--with-authuserdb} \
+	%{?with_userdb:--with-userdb=%{_sysconfdir}/sqwebmail/userdb } \
+	%{?with_pgsql:--with-authpgsql} \
+	%{?with_mysql:--without-authvchkpw} \
+	%{?with_mysql:--enable-mysql=y} \
+	%{?with_mysql:--with-mysql-include=/usr/include/mysql} \
+	%{?with_mysql:--with-mysql-libs=/usr/lib} \
+	%{?with_ssl:--enable-https} \
+	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
 	--enable-mimetypes=/etc/mime.types \
 	--enable-imageurl=%{imagedir} \
 	--with-cachedir=%{cachedir} \
@@ -257,40 +257,40 @@ install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
 install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
 
-%if 0%{!?_without_ldap:1}
+%if 0%{with ldap}
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc
 %endif
 
-%if 0%{!?_without_mysql:1}
+%if 0%{with mysql}
 install authlib/authdaemond.mysql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.mysql
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc
 %endif
 
-%if 0%{!?_without_pgsql:1}
+%if 0%{with pgsql}
 install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.pgsql
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
-%if 0%{!?_without_userdb:1}
+%if 0%{with userdb}
 install authlib/authuserdb $RPM_BUILD_ROOT%{_libexecdir}/authlib/authuserdb
 %endif
 
-%if 0%{!?_without_pam:1}
+%if 0%{with pam}
 install authlib/authpam $RPM_BUILD_ROOT%{_libexecdir}/authlib/authpam
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
 %endif
 
-%if 0%{!?_without_pwd:1}
+%if 0%{with pwd}
 install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
 %endif
 
-%if 0%{!?_without_shadow:1}
+%if 0%{with shadow}
 install authlib/authshadow $RPM_BUILD_ROOT%{_libexecdir}/authlib/authshadow
 %endif
 
-%if 0%{!?_without_cram:1}
+%if 0%{with cram}
 install authlib/authcram $RPM_BUILD_ROOT%{_libexecdir}/authlib/authcram
 %endif
 
@@ -308,7 +308,7 @@ mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc.dist $RPM_BUILD_ROOT%{_s
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook
 cp pcp/README.html pcp_README.html
 
-%if 0%{!?_without_ispell:1}
+%if 0%{with ispell}
 touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
 %endif
 
@@ -394,7 +394,7 @@ fi
 %{_mandir}/man7/authdaemond.*
 %{_mandir}/man8/deliverquota.*
 
-%if 0%{!?_without_ldap:1}
+%if 0%{with ldap}
 %files auth-ldap
 %defattr(644,root,root,755)
 %doc authlib/authldap.schema
@@ -403,7 +403,7 @@ fi
 %{_mandir}/man7/authldap.*
 %endif
 
-%if 0%{!?_without_mysql:1}
+%if 0%{with mysql}
 %files auth-mysql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
@@ -411,14 +411,14 @@ fi
 %{_mandir}/man7/authmysql.*
 %endif
 
-%if 0%{!?_without_pgsql:1}
+%if 0%{with pgsql}
 %files auth-pgsql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
 %{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
-%if 0%{!?_without_userdb:1}
+%if 0%{with userdb}
 %files auth-userdb
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authuserdb
@@ -435,28 +435,28 @@ fi
 %{_mandir}/man8/vchkpw2userdb.8*
 %endif
 
-%if 0%{!?_without_pam:1}
+%if 0%{with pam}
 %files auth-pam
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authpam
 %{_mandir}/man7/authpam.*
 %endif
 
-%if 0%{!?_without_pwd:1}
+%if 0%{with pwd}
 %files auth-pwd
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
 %{_mandir}/man7/authpwd.*
 %endif
 
-%if 0%{!?_without_shadow:1}
+%if 0%{with shadow}
 %files auth-shadow
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authshadow
 %{_mandir}/man7/authshadow.*
 %endif
 
-%if 0%{!?_without_cram:1}
+%if 0%{with cram}
 %files auth-cram
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authcram
