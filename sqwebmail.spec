@@ -43,7 +43,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define _bindir			/usr/bin
 %define _mandir			/usr/man
 %define _libexecdir             /usr/lib/sqwebmail
-%define	_sysconfdir		/etc/sqwebmail
+%define	_sysconfdir		/etc
 
 %define cacheowner              bin
 %define sqwebmailowner          root
@@ -205,10 +205,9 @@ fi
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook.dist
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/pam.d/*
-%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
 
-%attr(755,root,root) /etc/rc.d/init.d/sqwebmail
-%attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
+%attr(755,root,root) %{_sysconfdir}/rc.d/init.d/sqwebmail
+%attr(755,root,root) %{_sysconfdir}/cron.hourly/sqwebmail-cron-cleancache
 
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
 
