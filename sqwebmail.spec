@@ -49,11 +49,8 @@ Requires:	mailcap
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define	_bindir			/usr/bin
 %define	_libexecdir		/usr/%{_lib}
 %define	_localstatedir		/var/spool/sqwebmail
-%define	_mandir			/usr/share/man
-%define	_sbindir		/usr/sbin
 
 %define	httpddir		/home/services/httpd
 %define	cgibindir		%{httpddir}/cgi-bin
@@ -198,7 +195,6 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
-	umask 027
 	# apache1
 	if [ -d %{_apache1dir}/conf.d ]; then
 		rm -f %{_apache1dir}/conf.d/99_%{name}.conf
