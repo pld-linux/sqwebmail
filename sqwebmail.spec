@@ -1,32 +1,32 @@
 Summary:	SqWebMail - Maildir Webmail CGI client.
-Summary(pl): 	SqWebMail - Klient pocztyowy CGI.
-Name: 		sqwebmail
-Version: 	3.5.0
-Release: 	0.1
-License: 	GPL
-Group: 		Applications/Mail
-Source: 	http://download.sourceforge.net/courier/%{name}-%{version}.tar.bz2
+Summary(pl):	SqWebMail - Klient pocztyowy CGI.
+Name:		sqwebmail
+Version:	3.5.0
+Release:	0.1
+License:	GPL
+Group:		Applications/Mail
+Source0:	http://download.sourceforge.net/courier/%{name}-%{version}.tar.bz2
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Patch0:		%{name}-authpam_patch
-Url: 		http://www.inter7.com/sqwebmail/
-Requires: 	/sbin/chkconfig 
-Requires: 	gnupg >= 1.0.4 
-Requires: 	vixie-cron 
-Requires: 	expect
-BuildPreReq: 	rpm >= 4.0.2 
-BuildPreReq: 	mawk
-BuildPreReq: 	fileutils 
-BuildPreReq: 	grep 
-BuildPreReq: 	perl 
-BuildPreReq: 	gdbm-devel 
-BuildPreReq: 	gnupg >= 1.0.4 
-BuildPreReq: 	expect 
-BuildPreReq: 	pam-devel 
-BuildPreReq: 	openldap-devel 
-#BuildPreReq: 	mysql-devel 
-BuildPreReq: 	postgresql-devel
-BuildRoot: 	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+Url:		http://www.inter7.com/sqwebmail/
+Requires:	/sbin/chkconfig
+Requires:	gnupg >= 1.0.4
+Requires:	vixie-cron
+Requires:	expect
+BuildPreReq:	rpm >= 4.0.2
+BuildPreReq:	mawk
+BuildPreReq:	fileutils
+BuildPreReq:	grep
+BuildPreReq:	perl
+BuildPreReq:	gdbm-devel
+BuildPreReq:	gnupg >= 1.0.4
+BuildPreReq:	expect
+BuildPreReq:	pam-devel
+BuildPreReq:	openldap-devel
+#BuildPreReq: 	mysql-devel
+BuildPreReq:	postgresql-devel
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 
 %define httpddir                /home/httpd
@@ -56,14 +56,14 @@ SqWebMail is a Webmail CGI for Maildir mailboxes.
 SqWebMail jest klientem pocztowym CGI, bazuj±cym na Maildira'ch
 
 %package ldap
-Summary: 	SqWebMail LDAP authentication driver.
-Summary(pl): 	SqWebMail LDAP sterownik autoryzacji.
-Group: 		Applications/Mail
-Requires: 	sqwebmail = 3.5.0
+Summary:	SqWebMail LDAP authentication driver.
+Summary(pl):	SqWebMail LDAP sterownik autoryzacji.
+Group:		Applications/Mail
+Requires:	sqwebmail = 3.5.0
 
 %description ldap
 This package contains the necessary files to allow SqWebMail to
-authenticate from an LDAP directory.  Install this package if you need
+authenticate from an LDAP directory. Install this package if you need
 the ability to use an LDAP directory for authentication.
 
 %description(pl) ldap
@@ -71,34 +71,34 @@ Ten pakiet zawiera pliki niezbedne do autoryzacji poprz LDAP'a.
 Zainstaluj go jezeli potrzebujesz wsparcia od strony LDAP'a.
 
 %package mysql
-Summary: 	SqWebMail MySQL authentication driver.
-Summary(pl): 	SqWebMail MySQL sterownik autoryzacji.
-Group: 		Applications/Mail
-Requires: 	sqwebmail = 3.5.0
+Summary:	SqWebMail MySQL authentication driver.
+Summary(pl):	SqWebMail MySQL sterownik autoryzacji.
+Group:		Applications/Mail
+Requires:	sqwebmail = 3.5.0
 
 %description mysql
 This package contains the necessary files to allow SqWebMail to
-authenticate using a MySQL database table.  Install this package if you need
-the ability to use a MySQL database table for authentication.
+authenticate using a MySQL database table. Install this package if you
+need the ability to use a MySQL database table for authentication.
 
 %description(pl) mysql
-Ten pakiet zawiera pliki niezbedne do autoryzacji poprzez
-baze MySQL.
+Ten pakiet zawiera pliki niezbedne do autoryzacji poprzez baze MySQL.
 
 %package 	pgsql
-Summary: 	SqWebMail PostgreSQL authentication driver.
-Summary(pl): 	SqWebMail PostgreSQL sterownik autoryzacji.
-Group: 		Applications/Mail
-Requires: 	sqwebmail = 3.5.0
+Summary:	SqWebMail PostgreSQL authentication driver.
+Summary(pl):	SqWebMail PostgreSQL sterownik autoryzacji.
+Group:		Applications/Mail
+Requires:	sqwebmail = 3.5.0
 
 %description pgsql
 This package contains the necessary files to allow SqWebMail to
-authenticate using a PostgreSQL database table.  Install this package if you
-need the ability to use a PostgreSQL database table for authentication.
+authenticate using a PostgreSQL database table. Install this package
+if you need the ability to use a PostgreSQL database table for
+authentication.
 
 %description(pl) pgsql
-Ten pakiet zawiera pliki niezbedne do autoryzacji poprzez
-baze PostgreSQL.
+Ten pakiet zawiera pliki niezbedne do autoryzacji poprzez baze
+PostgreSQL.
 
 
 
@@ -119,9 +119,9 @@ baze PostgreSQL.
    	   --enable-cgibindir=%{cgibindir} \
 	   --enable-imagedir=%{imagedir} \
 	   --enable-imageurl=%{imageurl} \
-	   --with-cacheowner=%{cacheowner} 
+	   --with-cacheowner=%{cacheowner}
 
-	
+
 %build
 %{__make}
 
@@ -135,15 +135,15 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{pam.d,rc.d/init.d,sysconfig,profile.d,
 	   $RPM_BUILD_ROOT%{httpddir} \
 	   $RPM_BUILD_ROOT%{cgibindir} \
 	   $RPM_BUILD_ROOT%{imagedir} \
-	   $RPM_BUILD_ROOT%{htmllibdir} \
-	   $RPM_BUILD_ROOT%{cachedir} 
+$RPM_BUILD_ROOT%{_prefix} \
+	   $RPM_BUILD_ROOT%{cachedir}
 
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/%{_sysconfdir}/pam.d/webmail
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/%{_sysconfdir}/pam.d/calendar
 
-install authmodulelist $RPM_BUILD_ROOT%{htmllibdir}/authmodulelist
+install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 #install configlist $RPM_BUILD_ROOT%{htmllibdir}/configlist
-install sysconftool $RPM_BUILD_ROOT%{htmllibdir}/sysconftool
+install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
 install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
 install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
@@ -174,11 +174,11 @@ fi
 [ -d %{htmllibdir}/html/en ] || rm -f %{htmllibdir}/html/en
 
 %files
-%defattr(644, root, root,755)
+%defattr(644,root,root,755)
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
 
 %{imagedir}/*
-%{htmllibdir}/*
+%{_prefix}/*
 
 %attr(755, root, root) %{_sbindir}/*
 %attr(755, root, root) %{_libexecdir}/authlib/*
@@ -199,8 +199,8 @@ fi
 %doc maildir/README*.html
 
 
-%files ldap 
-%defattr(644, root, bin,755)
+%files ldap
+%defattr(644,root,root,755)
 %{_libexecdir}/authlib/authdaemond.ldap
 
 #%files mysql
@@ -208,7 +208,7 @@ fi
 ##%attr(644, root, bin) %{_libexecdir}/authlib/authdaemond.mysql
 
 %files pgsql
-%defattr(644, root, bin,755)
+%defattr(644,root,root,755)
 %{_libexecdir}/authlib/authdaemond.pgsql
 
 %clean
