@@ -1,0 +1,4 @@
+#!/bin/sh
+
+su - bin -s /bin/sh -c /home/httpd/sqwebmail/cleancache.pl
+
