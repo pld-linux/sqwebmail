@@ -29,7 +29,7 @@ BuildPreReq:	postgresql-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 
-%define httpddir                /home/httpd
+%define httpddir                /home/services/httpd
 %define cgibindir               %{httpddir}/cgi-bin
 %define imagedir                %{httpddir}/html/webmail
 %define imageurl                /webmail
