@@ -49,11 +49,8 @@ Requires:	mailcap
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define	_bindir			/usr/bin
 %define	_libexecdir		/usr/%{_lib}
 %define	_localstatedir		/var/spool/sqwebmail
-%define	_mandir			/usr/share/man
-%define	_sbindir		/usr/sbin
 
 %define	httpddir		/home/services/httpd
 %define	cgibindir		%{httpddir}/cgi-bin
