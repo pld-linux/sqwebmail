@@ -30,28 +30,19 @@ case "$1" in
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/sqwebmail ]; then
 		msg_starting sqwebmail
-		DIR="/usr/lib/sqwebmail/authlib"
+		DIR="/usr/lib/sqwebmail"
 
-		AUTHDAEMOND=authdaemond.plain
+		daemon $DIR/authlib/authdaemond $1
 
-		if [ -x $DIR/authdaemond.ldap ]; then
-			AUTHDAEMOND=authdaemond.ldap
-		fi
+	        case "`cat /etc/sqwebmail/calendarmode 2>/dev/null`" in
+	        net)
+	        $DIR/sqwebmail/pcpd start
+	        ;;
+	        *)
+	        ;;
+	        esac
+	        $DIR/sqwebmail/sqwebmaild start
 
-		if [ -x $DIR/authdaemond.mysql ]; then
-			AUTHDAEMOND=authdaemond.mysql
-		fi
-
-		if [ -x $DIR/authdaemond.pgsql ]; then
-			AUTHDAEMOND=authdaemond.pgsql
-		fi
-
-		. /etc/sqwebmail/authdaemonrc
-		if [ "$version" != "" ]; then
-			AUTHDAEMOND="$version"
-		fi
-
-		daemon $DIR/$AUTHDAEMOND $1
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/sqwebmail
 	else
@@ -62,7 +53,11 @@ case "$1" in
 	if [ -f /var/lock/subsys/sqwebmail ]; then
 		# Stop daemons.
 		msg_stopping sqwebmail
-		killproc sqwebmail
+		killproc sqwebmaild
+		killproc authdaemond
+		if ps -A|grep -q pcpd; then
+		 killproc pcpd
+		fi
 		rm -f /var/lock/subsys/sqwebmail
 	else
 		msg_not_running sqwebmail
