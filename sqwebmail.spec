@@ -1,8 +1,3 @@
-
-%define _with_mysql     1
-%define _with_ssl       1
-
-
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
@@ -24,7 +19,7 @@ Requires:	gnupg >= 1.0.4
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
-%{?_with_mysql:BuildRequires:     mysql-devel}
+%{!?_without_mysql:BuildRequires:     mysql-devel}
 BuildRequires:	openldap-devel
 BuildRequires:	pam-devel
 BuildRequires:	perl
@@ -54,7 +49,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 SqWebMail is a Webmail CGI for Maildir mailboxes.
 
-%description(pl)
+%description -l pl
 SqWebMail jest klientem pocztowym CGI dla skrzynek Maildir.
 
 %package ldap
@@ -111,11 +106,11 @@ tabeli w bazie PostgreSQL.
 %configure --sysconfdir=%{_sysconfdir}/sqwebmail \
 	   --libexecdir=%{_libexecdir} \
 	   --enable-cgibindir=%{cgibindir} \
-%{?_with_mysql: --without-authvchkpw} \
-%{?_with_mysql: --enable-mysql=y} \
-%{?_with_mysql: --with-mysql-include=/usr/include/mysql} \
-%{?_with_mysql: --with-mysql-libs=/usr/lib} \
-%{?_with_ssl: --enable-https} \
+%{!?_without_mysql: --without-authvchkpw} \
+%{!?_without_mysql: --enable-mysql=y} \
+%{!?_without_mysql: --with-mysql-include=/usr/include/mysql} \
+%{!?_without_mysql: --with-mysql-libs=/usr/lib} \
+%{!?_without_ssl: --enable-https} \
 	   --enable-imageurl=%{imagedir} \
 	   --with-cachedir=%{cachedir} \
 	   --enable-imagedir=%{imagedir} \
@@ -126,7 +121,8 @@ tabeli w bazie PostgreSQL.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/{pam.d,rc.d/init.d,sysconfig,profile.d,cron.hourly,sqwebmail} \
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
+	   $RPM_BUILD_ROOT/etc/{pam.d,rc.d/init.d,sysconfig,profile.d,cron.hourly,sqwebmail} \
            $RPM_BUILD_ROOT%{_libexecdir}/authlib \
            $RPM_BUILD_ROOT%{_sbindir} \
            $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
@@ -138,8 +134,8 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{pam.d,rc.d/init.d,sysconfig,profile.d,
            $RPM_BUILD_ROOT%{cachedir}
 
 
-install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/webmail
-install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/calendar
+install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
+install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
 
 install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 #install configlist $RPM_BUILD_ROOT%{htmllibdir}/configlist
@@ -149,8 +145,8 @@ install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemo
 install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
 install authlib/authdaemond.mysql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.mysql
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/sqwebmail-cron-cleancache
-install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/sqwebmail
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 
@@ -194,19 +190,23 @@ fi
 
 %attr(755,root,root) %{_sbindir}/*
 %dir %{_libexecdir}/authlib
-%attr(755,root,root) %{_libexecdir}/authlib/*
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemon
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemond
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.plain
+%attr(755,root,root) %{_libexecdir}/authlib/authsystem.passwd
 %dir %{_libexecdir}
 %dir %{_libexecdir}/sqwebmail
 %attr(755,root,root) %{_libexecdir}/sqwebmail/*
 
-%dir %{_sysconfdir}
+%dir %{_sysconfdir}/sqwebmail
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc.dist
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook.dist
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/pam.d/*
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
 
-%attr(755,root,root) %{_sysconfdir}/rc.d/init.d/sqwebmail
-%attr(755,root,root) %{_sysconfdir}/cron.hourly/sqwebmail-cron-cleancache
+%attr(755,root,root) /etc/rc.d/init.d/sqwebmail
+%attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
 
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
 
@@ -214,16 +214,17 @@ fi
 
 %files ldap
 %defattr(644,root,root,755)
-%{_libexecdir}/authlib/authdaemond.ldap
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
 %{_sysconfdir}/sqwebmail/authldaprc.dist
 
-
+%if 0%{!?_without_mysql:1}
 %files mysql
 %defattr(644,root,root,755)
-%{_libexecdir}/authlib/authdaemond.mysql
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
 %{_sysconfdir}/sqwebmail/authmysqlrc.dist
+%endif
 
 %files pgsql
 %defattr(644,root,root,755)
-%{_libexecdir}/authlib/authdaemond.pgsql
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
 %{_sysconfdir}/sqwebmail/authpgsqlrc.dist
