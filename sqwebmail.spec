@@ -129,7 +129,7 @@ tabeli w bazie PostgreSQL.
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
-	   $RPM_BUILD_ROOT/etc/{pam.d,rc.d/init.d,sysconfig,profile.d,cron.hourly,sqwebmail} \
+	   $RPM_BUILD_ROOT/etc/{pam.d,rc.d/init.d,sysconfig,cron.hourly,sqwebmail} \
            $RPM_BUILD_ROOT%{_libexecdir}/authlib \
            $RPM_BUILD_ROOT%{_sbindir} \
            $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
@@ -148,7 +148,7 @@ install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
 install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 #install configlist $RPM_BUILD_ROOT%{htmllibdir}/configlist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
-#install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
+install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
 
 %if 0%{!?_without_ldap:1}
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
