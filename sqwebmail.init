@@ -28,9 +28,34 @@ fi
 case "$1" in
   start)
         # Check if the service is already running?
-        if [ ! -f /var/lock/subsys/qwebmail]; then
+        if [ ! -f /var/lock/subsys/sqwebmail ]; then
                 msg_starting sqwebmail
-                daemon /usr/libexe/sqwebmail
+		DIR="/usr/lib/sqwebmail/authlib"
+
+		AUTHDAEMOND=authdaemond.plain
+
+		if [ -x $DIR/authdaemond.ldap ]
+		then
+		        AUTHDAEMOND=authdaemond.ldap
+		fi
+
+		if [ -x $DIR/authdaemond.mysql ]
+		then
+		        AUTHDAEMOND=authdaemond.mysql
+		fi
+
+		if [ -x $DIR/authdaemond.pgsql ]
+		then
+		        AUTHDAEMOND=authdaemond.pgsql
+		fi
+
+		. /etc/sqwebmail/authdaemonrc
+		if [ "$version" != "" ]
+		then
+		        AUTHDAEMOND="$version"
+		fi
+
+		daemon $DIR/$AUTHDAEMOND $1
                 RETVAL=$?
                 [ $RETVAL -eq 0 ] && touch /var/lock/subsys/sqwebmail
         else
@@ -53,20 +78,6 @@ case "$1" in
   restart)
         $0 stop
         $0 start
-        ;;
-  reload)
-        if [ -f /var/lock/subsys/sqwebmail ]; then
-                msg_reloading sqwebmail
-                killproc sqwebmail -HUP
-                RETVAL=$?
-        else
-                msg_not_running sqwebmail
-                RETVAL=1
-        fi
-        ;;
-  status)
-        status <service>
-        RETVAL=$?
         ;;
   *)
         msg_usage "$0 {start|stop|status|restart|reload}"
