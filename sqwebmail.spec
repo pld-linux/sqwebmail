@@ -1,3 +1,4 @@
+#
 # Conditional build:
 %bcond_without	cram
 %bcond_without	ispell
@@ -10,11 +11,12 @@
 %bcond_without	userdb
 %bcond_with	pl
 #
+%include	/usr/lib/rpm/macros.perl
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	4.0.7
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -48,7 +50,6 @@ Requires:	expect
 Requires:	gnupg >= 1.0.4
 Requires:	apache
 Requires:	mailcap
-Requires:	perl
 %{?with_ispell:Requires:	ispell}
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
