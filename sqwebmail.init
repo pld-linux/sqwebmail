@@ -30,17 +30,19 @@ case "$1" in
   start)
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/sqwebmail ]; then
-		msg_starting sqwebmail
-		daemon $DIR/authlib/authdaemond $1
 
 	        case "`cat /etc/sqwebmail/calendarmode 2>/dev/null`" in
 	        net)
-	        $DIR/sqwebmail/pcpd start
+		msg_starting pcpd
+	        daemon $DIR/sqwebmail/pcpd start
 	        ;;
 	        *)
 	        ;;
 	        esac
-	        $DIR/sqwebmail/sqwebmaild start
+
+		msg_starting sqwebmail
+		$DIR/authlib/authdaemond $1
+	        daemon $DIR/sqwebmail/sqwebmaild start
 
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/sqwebmail
@@ -54,8 +56,10 @@ case "$1" in
 		msg_stopping sqwebmail
 		killproc sqwebmaild
 		$DIR/authlib/authdaemond $1
+		
 		if ps -A|grep -q pcpd; then
-		 killproc pcpd
+		    msg_stopping pcpd
+		    killproc pcpd
 		fi
 		rm -f /var/lock/subsys/sqwebmail
 	else
