@@ -1,12 +1,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	3.5.0
+Version:	3.5.3
 Release:	0.9
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	7c95890cd0ffcd374b843810efac07d3
+# Source0-md5:	3eadaf5ad1cb942666da9a34e7b7109d
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
@@ -423,12 +423,12 @@ fi
 %attr(755,root,root) %{_sbindir}/userdb
 %attr(755,root,root) %{_sbindir}/userdbpw
 %attr(755,root,root) %{_sbindir}/vchkpw2userdb
-%{_mandir}/man7/authuserdb.7
+%{_mandir}/man7/authuserdb.7.gz
 %{_mandir}/man8/makeuserdb.8.gz
-%{_mandir}/man8/pw2userdb.8
+%{_mandir}/man8/pw2userdb.8.gz
 %{_mandir}/man8/userdb.8.gz
 %{_mandir}/man8/userdbpw.8.gz
-%{_mandir}/man8/vchkpw2userdb.8
+%{_mandir}/man8/vchkpw2userdb.8.gz
 %endif
 
 %if 0%{!?_without_pam:1}
