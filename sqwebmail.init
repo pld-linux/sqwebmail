@@ -7,12 +7,17 @@
 # description:	SqWebMail is a Webmail CGI for Maildir mailboxes.
 
 DIR="@libexecdir@"
+sysconfdir="@sysconfdir@"
+sbindir="@sbindir@"
 
 # Source function library
 . /etc/rc.d/init.d/functions
 
 # Get network config
 . /etc/sysconfig/network
+
+# Get sqwebmaild config
+. $sysconfdir/sqwebmaild
 
 # Check that networking is up.
 if is_yes "${NETWORKING}"; then
@@ -31,18 +36,21 @@ case "$1" in
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/sqwebmail ]; then
 
+		$DIR/authlib/authdaemond $1
+
 	        case "`cat /etc/sqwebmail/calendarmode 2>/dev/null`" in
 	        net)
 		msg_starting pcpd
-	        daemon $DIR/sqwebmail/pcpd start
+	        daemon $sbindir/courierlogger -pid=$PIDFILE.pcp -start \
+		$DIR/sqwebmail/pcpd server
 	        ;;
 	        *)
 	        ;;
 	        esac
 
 		msg_starting sqwebmail
-		$DIR/authlib/authdaemond $1
-	        daemon $DIR/sqwebmail/sqwebmaild start
+	        daemon $sbindir/courierlogger -pid=$PIDFILE -start \
+		$DIR/sqwebmail/sqwebmaild
 
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/sqwebmail
@@ -55,12 +63,15 @@ case "$1" in
 		# Stop daemons.
 		msg_stopping sqwebmail
 		killproc sqwebmaild
-		$DIR/authlib/authdaemond $1
+		rm -f $PIDFILE
 		
-		if ps -A|grep -q pcpd; then
+		if [ -f $PIDFILE.pcp ]; then
 		    msg_stopping pcpd
 		    killproc pcpd
+		    rm -f $PIDFILE.pcp
 		fi
+
+		$DIR/authlib/authdaemond $1
 		rm -f /var/lock/subsys/sqwebmail
 	else
 		msg_not_running sqwebmail
@@ -72,7 +83,8 @@ case "$1" in
 	exit $?
 	;;
   status)
-	status sqwebmail
+	status sqwebmaild
+	status pcpd
 	exit $?
 	;;
   *)
