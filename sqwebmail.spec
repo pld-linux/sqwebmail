@@ -198,7 +198,6 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
-	umask 027
 	# apache1
 	if [ -d %{_apache1dir}/conf.d ]; then
 		rm -f %{_apache1dir}/conf.d/99_%{name}.conf
