@@ -352,30 +352,33 @@ fi
 
 %{imagedir}
 %{_prefix}
-%{_sbindir}/webgpg
+%attr(755,root,root) %{_sbindir}/webgpg
 
+%dir %{_libexecdir}
 %dir %{_libexecdir}/authlib
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.plain
 %attr(755,root,root) %{_libexecdir}/authlib/authsystem.passwd
-%dir %{_libexecdir}
 %dir %{_libexecdir}/sqwebmail
 %attr(755,root,root) %{_libexecdir}/sqwebmail/*
 
 %dir %{_sysconfdir}/sqwebmail
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/CHARSET
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE_PREF
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LOCALE
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/TIMEZONELIST
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/ISPELLDICT
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
+%dir %{htmllibdir}
+%dir %{htmllibdir}/html
+%dir %{htmllibdir}/html/en
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/CHARSET
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE_PREF
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LOCALE
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/TIMEZONELIST
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/ISPELLDICT
+%config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
 
 %attr(755,root,root) /etc/rc.d/init.d/sqwebmail
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
@@ -449,7 +452,6 @@ fi
 %{_mandir}/man7/authshadow.*
 %endif
 
-
 %if 0%{!?_without_cram:1}
 %files auth-cram
 %defattr(644,root,root,755) 
@@ -464,6 +466,7 @@ fi
 
 %files pl_html
 %defattr(644,root,root,755)
+%{htmllibdir}/pl-pl
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/CHARSET
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE_PREF
