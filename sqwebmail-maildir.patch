@@ -1,0 +1,21 @@
+diff -Nur old/sqwebmail/auth.c new/sqwebmail/auth.c
+--- old/sqwebmail/auth.c	2003-10-11 05:34:04.000000000 +0000
++++ new/sqwebmail/auth.c	2004-02-20 15:27:20.000000000 +0000
+@@ -79,7 +79,7 @@
+ static int login_maildir(const char *maildir)
+ {
+ 	if (!maildir || !*maildir)
+-		maildir="Maildir";
++		maildir="Mail/Maildir";
+ 	if (chdir(maildir))	return (-1);
+ 	maildir_loginexec();
+ 	return (0);
+@@ -107,7 +107,7 @@
+ char	*buf;
+ struct stat stat_buf;
+ 
+-	if (!p || !*p)	p="Maildir";
++	if (!p || !*p)	p="Mail/Maildir";
+ 
+ 	buf=malloc(strlen(h)+strlen(p)+sizeof(PASSFILE)+100);
+ 
