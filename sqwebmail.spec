@@ -1,19 +1,18 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	3.6.0
+Version:	3.6.1
 Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	0b36901ae09e4686bd50acab209ca66f
+# Source0-md5:	e0bd529a28798dcc9783377ddabdac6e
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
 # Source3-md5:	702b4075c7e8b6ae71c895a8bb803aa9
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
-Patch2:		%{name}-prowizorka.patch
 URL:		http://www.inter7.com/sqwebmail/
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
@@ -205,7 +204,6 @@ Polskie t³umaczenie interfejsu.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 %configure \
