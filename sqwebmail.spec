@@ -13,7 +13,7 @@ Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
-Source3:        %{name}-3.4.1-mgt.pl-beautifull_patch.tgz
+Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 URL:		http://www.inter7.com/sqwebmail/
@@ -108,25 +108,19 @@ tabeli w bazie PostgreSQL.
 %patch1 -p1
 
 %build
-
-%configure --prefix=%{_prefix} \
-           --sbindir=%{_sbindir} \
-           --sysconfdir=%{_sysconfdir}/sqwebmail \
-           --libexecdir=%{_libexecdir} \
-           --mandir=%{_mandir} \
-           --enable-cgibindir=%{cgibindir} \
+%configure --sysconfdir=%{_sysconfdir}/sqwebmail \
+	   --libexecdir=%{_libexecdir} \
+	   --enable-cgibindir=%{cgibindir} \
 %{?_with_mysql: --without-authvchkpw} \
 %{?_with_mysql: --enable-mysql=y} \
 %{?_with_mysql: --with-mysql-include=/usr/include/mysql} \
 %{?_with_mysql: --with-mysql-libs=/usr/lib} \
 %{?_with_ssl: --enable-https} \
-           --enable-imageurl=%{imagedir} \
-           --with-cachedir=%{cachedir} \
-           --enable-cgibindir=%{cgibindir} \
-           --enable-imagedir=%{imagedir} \
-           --enable-imageurl=%{imageurl} \
-           --with-cacheowner=%{cacheowner}
-
+	   --enable-imageurl=%{imagedir} \
+	   --with-cachedir=%{cachedir} \
+	   --enable-imagedir=%{imagedir} \
+	   --enable-imageurl=%{imageurl} \
+	   --with-cacheowner=%{cacheowner}
 
 %{__make}
 
