@@ -2,7 +2,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	3.5.0
-Release:	0.3
+Release:	0.4
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -11,6 +11,7 @@ Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
+Patch2:		%{name}-prowizorka.patch
 URL:		http://www.inter7.com/sqwebmail/
 Requires(post,preun):	/sbin/chkconfig
 Requires:	crondaemon
@@ -33,6 +34,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define htmllibdir              /usr/share/sqwebmail
 %define cachedir                /var/cache/sqwebmail
+%define authdaemonvar		/var/cache/authdaemonvar
 
 %define _prefix                 %{htmllibdir}
 %define _sbindir		/usr/sbin
@@ -101,6 +103,7 @@ tabeli w bazie PostgreSQL.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %configure --sysconfdir=%{_sysconfdir}/sqwebmail \
@@ -115,7 +118,9 @@ tabeli w bazie PostgreSQL.
 	   --with-cachedir=%{cachedir} \
 	   --enable-imagedir=%{imagedir} \
 	   --enable-imageurl=%{imageurl} \
-	   --with-cacheowner=%{cacheowner}
+	   --with-cacheowner=%{cacheowner} \
+	   --with-authdaemonvar=%{authdaemonvar} \
+	   --with-userdb=%{_sysconfdir}/sqwebmail/userdb
 
 %{__make}
 
@@ -131,7 +136,8 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
            $RPM_BUILD_ROOT%{cgibindir} \
            $RPM_BUILD_ROOT%{imagedir} \
            $RPM_BUILD_ROOT%{_prefix} \
-           $RPM_BUILD_ROOT%{cachedir}
+           $RPM_BUILD_ROOT%{cachedir} \
+	   $RPM_BUILD_ROOT%{authdaemonvar}
 
 
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
@@ -160,7 +166,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 [ -L %{htmllibdir}/html/en ] || ln -fs en-us %{htmllibdir}/html/en
-[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
+[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/pl
 /sbin/chkconfig --add sqwebmail
 if [ -f /var/lock/subsys/sqwebmail ]; then
 	/etc/rc.d/init.d/sqwebmail restart 1>&2
@@ -175,7 +181,7 @@ if [ "$1" = "0" ]; then
 		/etc/rc.d/init.d/sqwebmail stop 1>&2
 	fi
 	[ ! -L %{htmllibdir}/html/en ] || rm -f %{htmllibdir}/html/en
-	[ ! -L %{htmllibdir}/html/pl ] || rm -f %{htmllibdir}/html/pl
+	[ ! -L %{htmllibdir}/html/pl ] || rm -f %{htmllibdir}/pl
 fi
 
 %files
@@ -209,6 +215,7 @@ fi
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
 
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
+%dir %{authdaemonvar}
 
 %{_mandir}/man?/*
 
