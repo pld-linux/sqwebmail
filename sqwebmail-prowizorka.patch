@@ -1,11 +1,12 @@
---- sqwebmail-3.5.0/sqwebmail/sqwebmail.c.orig	Sun Jan  5 05:26:06 2003
-+++ sqwebmail-3.5.0/sqwebmail/sqwebmail.c	Thu Feb 20 20:40:43 2003
-@@ -2375,7 +2375,7 @@
+diff -Nur old/sqwebmail/sqwebmail.c new/sqwebmail/sqwebmail.c
+--- old/sqwebmail/sqwebmail.c	2003-11-18 02:42:44.000000000 +0000
++++ new/sqwebmail/sqwebmail.c	2004-02-20 16:27:39.000000000 +0000
+@@ -2759,7 +2759,7 @@
  				((rm=getenv("CONTENT_TYPE")) != 0 &&
  				strncasecmp(rm,"multipart/form-data;", 20)
  					== 0)))
--			enomem();	/* multipart/formdata posts not allowed
-+			/*enomem();*/	/* multipart/formdata posts not allowed
- 					*/
+-			emsg("multipart/formdata posts not allowed","");
++//			emsg("multipart/formdata posts not allowed","");
  
  		/* Some additional safety checks */
+ 
