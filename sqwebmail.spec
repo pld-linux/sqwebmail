@@ -13,12 +13,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	3.6.2
-Release:	2
+Version:	4.0.2
+Release:	0.9
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	7e5c19c4c1ba86e0c96408d5674c7f90
+# Source0-md5:	d0312654c89dca924dfc958bce204b5a
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 %{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
@@ -26,8 +26,7 @@ Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 Patch2:		%{name}-prowizorka.patch
 Patch3:		%{name}-maildir.patch
-Patch4:		%{name}-no_res_query.patch
-Patch5:		%{name}-init.patch
+Patch4:		%{name}-init.patch
 URL:		http://www.inter7.com/sqwebmail/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -38,7 +37,7 @@ BuildRequires:	gnupg >= 1.0.4
 BuildRequires:	libstdc++-devel
 %{?with_mysql:BuildRequires:	mysql-devel}
 %{?with_ldap:BuildRequires:	openldap-devel}
-%{?with_pam:BuildRequires:		pam-devel}
+%{?with_pam:BuildRequires:	pam-devel}
 BuildRequires:	perl-base
 %{?with_pgsql:BuildRequires:	postgresql-devel}
 PreReq:		rc-scripts
@@ -227,7 +226,6 @@ install %{SOURCE2} sqwebmail.init.in
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-%patch5 -p1
 
 %build
 cd authlib
