@@ -522,10 +522,10 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %doc pcp_README.html
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/calendarmode
 %attr(755,root,root) %{_libexecdir}/sqwebmail/pcpd
-%attr(751,daemon,daemon) %dir %{_localstatedir}/calendar
-%attr(750,daemon,daemon) %dir %{_localstatedir}/calendar/localcache
-%attr(750,daemon,daemon) %dir %{_localstatedir}/calendar/private
-%attr(755,daemon,daemon) %dir %{_localstatedir}/calendar/public
+%attr(751,bin,bin) %dir %{_localstatedir}/calendar
+%attr(700,bin,bin) %dir %{_localstatedir}/calendar/localcache
+%attr(750,bin,bin) %dir %{_localstatedir}/calendar/private
+%attr(755,bin,bin) %dir %{_localstatedir}/calendar/public
 
 %if %{with pl}
 %files pl_html
