@@ -1,3 +1,15 @@
+# Conditional build:
+%bcond_without cram
+%bcond_without ispell
+%bcond_without ldap
+%bcond_without mysql
+%bcond_without pam
+%bcond_without pgsql
+%bcond_without pwd
+%bcond_without ssl
+%bcond_without userdb
+%bcond_with pl
+#
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
@@ -9,7 +21,7 @@ Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
 # Source0-md5:	7e5c19c4c1ba86e0c96408d5674c7f90
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
-Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
+%{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 URL:		http://www.inter7.com/sqwebmail/
@@ -35,7 +47,7 @@ Requires:	perl
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define httpddir                /home/services/httpd
+%define httpddir                /srv/httpd
 %define cgibindir               %{httpddir}/cgi-bin
 %define imagedir                %{httpddir}/html/webmail
 %define imageurl                /webmail
@@ -242,7 +254,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
            $RPM_BUILD_ROOT%{_sbindir} \
            $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
            $RPM_BUILD_ROOT%{httpddir} \
-	   $RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl \
+%{?with_pl:$RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl} \
            $RPM_BUILD_ROOT%{cgibindir} \
            $RPM_BUILD_ROOT%{imagedir} \
            $RPM_BUILD_ROOT%{_prefix} \
@@ -299,8 +311,10 @@ install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
+%if %{with pl}
 tar zxf %{SOURCE3}
 install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl
+%endif
 
 rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc
@@ -467,6 +481,7 @@ fi
 %doc pcp_README.html
 %{_sbindir}/pcpd
 
+%if %{with pl}
 %files pl_html
 %defattr(644,root,root,755)
 %dir %{htmllibdir}/html/pl-pl
@@ -478,3 +493,4 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LOCALE
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/TIMEZONELIST
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/ISPELLDICT
+%endif
