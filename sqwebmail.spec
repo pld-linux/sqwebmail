@@ -28,7 +28,7 @@ BuildRequires:	gnupg >= 1.0.4
 %{!?_without_mysql:BuildRequires:	mysql-devel}
 %{!?_without_ldap:BuildRequires:	openldap-devel}
 %{!?_without_pgsql:BuildRequires:	postgresql-devel}
-BuildRequires:	pam-devel
+%{!?_without_pam:BuildRequires:	pam-devel}
 BuildRequires:	perl
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -119,6 +119,62 @@ authenticate using a userdb file.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku userdb.
 
+%package        pam
+Summary:        SqWebMail pam authentication driver
+Summary(pl):    Sterownik uwierzytelnienia pam dla SqWebMaila
+Group:          Applications/Mail
+Requires:       %{name} = %{version}
+
+%description pam
+This package contains the necessary files to allow SqWebMail to
+authenticate using a pam.
+
+%description pam -l pl
+Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
+biblioteki pam.
+
+%package        pwd
+Summary:        SqWebMail pwd authentication driver
+Summary(pl):    Sterownik uwierzytelnienia pwd dla SqWebMaila
+Group:          Applications/Mail
+Requires:       %{name} = %{version}
+
+%description pwd
+This package contains the necessary files to allow SqWebMail to
+authenticates from the /etc/passwd file.
+
+%description pwd -l pl
+Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
+pliku /etc/passwd.
+
+%package        shadow
+Summary:        SqWebMail shadow authentication driver
+Summary(pl):    Sterownik uwierzytelnienia shadow dla SqWebMaila
+Group:          Applications/Mail
+Requires:       %{name} = %{version}
+
+%description shadow
+This package contains the necessary files to allow SqWebMail to
+authenticates from the /etc/shadow file.
+
+%description shadow -l pl
+Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
+pliku /etc/shadow.
+
+%package        cram
+Summary:        SqWebMail cram authentication driver
+Summary(pl):    Sterownik uwierzytelnienia cram dla SqWebMaila
+Group:          Applications/Mail
+Requires:       %{name} = %{version}
+
+%description cram
+This package contains the necessary files to allow SqWebMail to
+authenticate using cram mechanism.
+
+%description cram -l pl
+Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
+mechanizmu cram.
+
 %package        calendar
 Summary:        SqWebMail calendar
 Summary(pl):    Kalendarz dla SqWebMaila
@@ -155,6 +211,10 @@ Polskie t³umaczenie interfejsu
 	   --libexecdir=%{_libexecdir} \
 	   --enable-cgibindir=%{cgibindir} \
 %{!?_without_ldap: --with-authldap} \
+%{!?_without_pam: --with-authpam} \
+%{!?_without_pwd: --with-authpwd} \
+%{!?_without_pwd: --with-authshadow} \
+%{!?_without_cram: --with-authcram} \
 %{!?_without_userdb: --with-authuserdb} \
 %{!?_without_userdb: --with-userdb=%{_sysconfdir}/sqwebmail/userdb } \
 %{!?_without_pgsql: --with-authpgsql} \
@@ -182,16 +242,15 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
            $RPM_BUILD_ROOT%{_sbindir} \
            $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
            $RPM_BUILD_ROOT%{httpddir} \
-	   $RPM_BUILD_ROOT%{htmllibdir}/pl-pl \
+	   $RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl \
            $RPM_BUILD_ROOT%{cgibindir} \
            $RPM_BUILD_ROOT%{imagedir} \
            $RPM_BUILD_ROOT%{_prefix} \
            $RPM_BUILD_ROOT%{cachedir} \
 	   $RPM_BUILD_ROOT%{authdaemonvar}
 
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
 
-install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
-install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
 
 install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
@@ -214,17 +273,34 @@ mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc.dist $RPM_BUILD_ROOT%{_sy
 %endif
 
 %if 0%{!?_without_userdb:1}
-install authlib/authdaemond.userdb $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.userdb
+install authlib/authuserdb $RPM_BUILD_ROOT%{_libexecdir}/authlib/authuserdb
 %endif
 
-install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
+%if 0%{!?_without_pam:1}
+install authlib/authpam $RPM_BUILD_ROOT%{_libexecdir}/authlib/authpam
+install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
+install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
+%endif
+
+%if 0%{!?_without_pwd:1}
 install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
+%endif
+
+%if 0%{!?_without_shadow:1}
+install authlib/authshadow $RPM_BUILD_ROOT%{_libexecdir}/authlib/authshadow
+%endif
+
+%if 0%{!?_without_cram:1}
+install authlib/authcram $RPM_BUILD_ROOT%{_libexecdir}/authlib/authcram
+%endif
+
+
+install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
 install pcpd $RPM_BUILD_ROOT%{_sbindir}
 install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
-%{__make} install DESTDIR=$RPM_BUILD_ROOT
 
 tar zxf %{SOURCE3}
 install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl
@@ -243,13 +319,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 [ -L %{htmllibdir}/html/en ] || ln -fs en-us %{htmllibdir}/html/en
-[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
 /sbin/chkconfig --add sqwebmail
 if [ -f /var/lock/subsys/sqwebmail ]; then
 	/etc/rc.d/init.d/sqwebmail restart 1>&2
 else
 	echo "Run \"/etc/rc.d/init.d/sqwebmail start\" to start sqwebmail daemon."
 fi
+
+%post pl_html
+[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
 
 %preun
 if [ "$1" = "0" ]; then
@@ -270,7 +348,7 @@ fi
 
 %{imagedir}
 %{_prefix}
-%{_sbindir}/webgp
+%{_sbindir}/webgpg
 
 %dir %{_libexecdir}/authlib
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon
@@ -301,12 +379,8 @@ fi
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
 %dir %{authdaemonvar}
 %{_mandir}/man7/authlib.*
-%{_mandir}/man7/authcram.*
 %{_mandir}/man7/authdaemon.*
 %{_mandir}/man7/authdaemond.*
-%{_mandir}/man7/authpam.*
-%{_mandir}/man7/authpwd.*
-%{_mandir}/man7/authshadow.*
 %{_mandir}/man8/deliverquota.*
 
 %if 0%{!?_without_ldap:1}
@@ -336,7 +410,7 @@ fi
 %if 0%{!?_without_userdb:1}
 %files userdb
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libexecdir}/authlib/authdaemond.userdb
+%attr(755,root,root) %{_libexecdir}/authlib/authuserdb
 %attr(755,root,root) %{_sbindir}/makeuserdb
 %attr(755,root,root) %{_sbindir}/pw2userdb
 %attr(755,root,root) %{_sbindir}/userdb
@@ -350,10 +424,46 @@ fi
 %{_mandir}/man8/vchkpw2userdb.8
 %endif
 
+%if 0%{!?_without_pam:1}
+%files pam
+%defattr(644,root,root,755) 
+%attr(755,root,root) %{_libexecdir}/authlib/authpam
+%{_mandir}/man7/authpam.*
+%endif
+
+%if 0%{!?_without_pwd:1}
+%files pwd
+%defattr(644,root,root,755) 
+%attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
+%{_mandir}/man7/authpwd.*
+%endif
+
+%if 0%{!?_without_shadow:1}
+%files shadow
+%defattr(644,root,root,755) 
+%attr(755,root,root) %{_libexecdir}/authlib/authshadow
+%{_mandir}/man7/authshadow.*
+%endif
+
+
+%if 0%{!?_without_cram:1}
+%files cram
+%defattr(644,root,root,755) 
+%attr(755,root,root) %{_libexecdir}/authlib/authcram
+%{_mandir}/man7/authcram.*
+%endif
+
+
 %files calendar
 %defattr(644,root,root,755)
 %doc pcp_README.html
 %{_sbindir}/pcpd
 
 %files pl_html
-%{htmllibdir}/pl-pl/*
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/CHARSET
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE_PREF
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LOCALE
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/TIMEZONELIST
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/ISPELLDICT
+%{htmllibdir}/html/pl-pl/*.html
