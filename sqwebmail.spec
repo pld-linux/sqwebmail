@@ -59,6 +59,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define	cgibindir		%{httpddir}/cgi-bin
 %define	imagedir		%{_datadir}/sqwebmail/images
 %define	imageurl		/webmail
+%define	_apache1dir		/etc/apache
+%define	_apache2dir		/etc/httpd
 
 %define	cacheowner		bin
 %define	sqwebmailowner		root
@@ -163,23 +165,26 @@ rm -f $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
 cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/webmail
 
 # for apache
-echo "Alias /webmail %{imagedir}" >%{name}.conf
-install %{name}.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd
+echo "Alias /webmail %{imagedir}" >apache-%{name}.conf
+install apache-%{name}.conf $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/apache-%{name}.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
-if [ -f /etc/apache/apache.conf ] && ! grep -q "^Include.*%{name}.conf" /etc/apache/apache.conf; then
-    echo "Include /etc/httpd/%{name}.conf" >> /etc/apache/apache.conf
-    if [ -f /var/lock/subsys/apache ]; then
-        /etc/rc.d/init.d/apache restart 1>&2
-    fi
-elif [ -d /etc/httpd/httpd.conf ]; then
-    ln -sf /etc/httpd/%{name}.conf /etc/httpd/httpd.conf/99_%{name}.conf
-    if [ -f /var/lock/subsys/httpd ]; then
-	/usr/sbin/apachectl restart 1>&2
-    fi
+# apache1
+if [ -d %{_apache1dir}/conf.d ]; then
+	ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache1dir}/conf.d/99_%{name}.conf
+        if [ -f /var/lock/subsys/apache ]; then
+	        /etc/rc.d/init.d/apache restart 1>&2
+        fi
+fi
+# apache2
+if [ -d %{_apache2dir}/httpd.conf ]; then
+        ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache2dir}/httpd.conf/99_%{name}.conf
+        if [ -f /var/lock/subsys/httpd ]; then
+                /etc/rc.d/init.d/httpd restart 1>&2
+        fi
 fi
 
 [ -L %{_datadir}/sqwebmail/html/en ] || ln -fs en-us %{_datadir}/sqwebmail/html/en
@@ -192,23 +197,22 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
-    umask 027
-    if [ -d /etc/httpd/httpd.conf ]; then
-	rm -f /etc/httpd/httpd.conf/99_%{name}.conf
-        if [ -f /var/lock/subsys/httpd ]; then
-    	    /usr/sbin/apachectl restart 1>&2
+	umask 027
+        # apache1
+        if [ -d %{_apache1dir}/conf.d ]; then
+                rm -f %{_apache1dir}/conf.d/99_%{name}.conf
+                if [ -f /var/lock/subsys/apache ]; then
+                        /etc/rc.d/init.d/apache restart 1>&2
+                fi
         fi
-    elif [ -f /etc/apache/apache.conf ]; then
-        grep -v "^Include.*%{name}.conf" /etc/apache/apache.conf > \
-        /etc/apache/apache.conf.tmp
-        mv -f /etc/apache/apache.conf.tmp /etc/apache/apache.conf
-        if [ -f /var/lock/subsys/apache ]; then
-            /etc/rc.d/init.d/apache restart 1>&2
+        # apache2
+        if [ -d %{_apache2dir}/httpd.conf ]; then
+                rm -f %{_apache2dir}/httpd.conf/99_%{name}.conf
+                if [ -f /var/lock/subsys/httpd ]; then
+                        /etc/rc.d/init.d/httpd restart 1>&2
+                fi
         fi
-    fi
-fi
 
-if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del sqwebmail
 	if [ -f /var/lock/subsys/sqwebmail ]; then
 		/etc/rc.d/init.d/sqwebmail stop 1>&2
@@ -256,8 +260,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %doc maildir/README*.html gpglib/README.html
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
 
-%{imagedir}
-%config(noreplace) %verify(not size mtime md5) /etc/httpd/%{name}.conf
 
 %attr(755,root,root) %{_sbindir}/webgpg
 %attr(755,root,root) %{_sbindir}/sharedindexinstall
@@ -274,12 +276,12 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared.tmp
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/sqwebmaild
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/apache-%{name}.conf
 %dir %{_datadir}/sqwebmail
 %dir %{_datadir}/sqwebmail/html
 %dir %{_datadir}/sqwebmail/html/en-us
-%{_datadir}/sqwebmail/images
+%{imagedir}
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/CHARSET
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE_PREF
