@@ -257,40 +257,40 @@ install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
 install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
 
-%if 0%{with ldap}
+%if %{with ldap}
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc
 %endif
 
-%if 0%{with mysql}
+%if %{with mysql}
 install authlib/authdaemond.mysql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.mysql
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc
 %endif
 
-%if 0%{with pgsql}
+%if %{with pgsql}
 install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.pgsql
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
-%if 0%{with userdb}
+%if %{with userdb}
 install authlib/authuserdb $RPM_BUILD_ROOT%{_libexecdir}/authlib/authuserdb
 %endif
 
-%if 0%{with pam}
+%if %{with pam}
 install authlib/authpam $RPM_BUILD_ROOT%{_libexecdir}/authlib/authpam
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/webmail
 install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
 %endif
 
-%if 0%{with pwd}
+%if %{with pwd}
 install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
 %endif
 
-%if 0%{with shadow}
+%if %{with shadow}
 install authlib/authshadow $RPM_BUILD_ROOT%{_libexecdir}/authlib/authshadow
 %endif
 
-%if 0%{with cram}
+%if %{with cram}
 install authlib/authcram $RPM_BUILD_ROOT%{_libexecdir}/authlib/authcram
 %endif
 
@@ -308,7 +308,7 @@ mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc.dist $RPM_BUILD_ROOT%{_s
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook
 cp pcp/README.html pcp_README.html
 
-%if 0%{with ispell}
+%if %{with ispell}
 touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
 %endif
 
@@ -394,7 +394,7 @@ fi
 %{_mandir}/man7/authdaemond.*
 %{_mandir}/man8/deliverquota.*
 
-%if 0%{with ldap}
+%if %{with ldap}
 %files auth-ldap
 %defattr(644,root,root,755)
 %doc authlib/authldap.schema
@@ -403,7 +403,7 @@ fi
 %{_mandir}/man7/authldap.*
 %endif
 
-%if 0%{with mysql}
+%if %{with mysql}
 %files auth-mysql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
@@ -411,14 +411,14 @@ fi
 %{_mandir}/man7/authmysql.*
 %endif
 
-%if 0%{with pgsql}
+%if %{with pgsql}
 %files auth-pgsql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
 %{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
-%if 0%{with userdb}
+%if %{with userdb}
 %files auth-userdb
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authuserdb
@@ -435,28 +435,28 @@ fi
 %{_mandir}/man8/vchkpw2userdb.8*
 %endif
 
-%if 0%{with pam}
+%if %{with pam}
 %files auth-pam
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authpam
 %{_mandir}/man7/authpam.*
 %endif
 
-%if 0%{with pwd}
+%if %{with pwd}
 %files auth-pwd
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
 %{_mandir}/man7/authpwd.*
 %endif
 
-%if 0%{with shadow}
+%if %{with shadow}
 %files auth-shadow
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authshadow
 %{_mandir}/man7/authshadow.*
 %endif
 
-%if 0%{with cram}
+%if %{with cram}
 %files auth-cram
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authcram
