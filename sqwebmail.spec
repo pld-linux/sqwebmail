@@ -2,7 +2,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	3.5.0
-Release:	0.5
+Release:	0.6
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -19,7 +19,9 @@ Requires:	expect
 Requires:	gnupg >= 1.0.4
 Requires:	apache
 Requires:	mailcap
+Requires:	perl
 %{!?_without_ispell:Requires: ispell}
+%{!?_without_ssl:Requires: apache-mod_ssl}
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
@@ -129,6 +131,18 @@ Calendar
 %description calendar -l pl
 Kalendarz
 
+%package pl_html
+Summary:        SqWebMail - Polish translation
+Summary(pl):    Sqwebmail - Wersja polska interfejsu
+Group:          Applications/Mail
+Requires:       %{name} = %{version}
+
+%description pl_html
+Polish translation
+
+%description pl_html -l pl
+Polskie t³umaczenie interfejsu
+
 
 %prep
 %setup -q
@@ -186,41 +200,50 @@ install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
 
 %if 0%{!?_without_ldap:1}
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
+mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authldaprc
 %endif
 
 %if 0%{!?_without_mysql:1}
 install authlib/authdaemond.mysql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.mysql
+mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authmysqlrc
 %endif
 
 %if 0%{!?_without_pgsql:1}
 install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.pgsql
+mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
 %if 0%{!?_without_userdb:1}
-install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.userdb
+install authlib/authdaemond.userdb $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.userdb
 %endif
 
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
 install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
 install pcpd $RPM_BUILD_ROOT%{_sbindir}
+install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 
 tar zxf %{SOURCE3}
-install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{htmllibdir}/pl-pl
+install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl
 
 rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
-
+mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc
+mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook
 cp pcp/README.html pcp_README.html
+
+%if 0%{!?_without_ispell:1}
+touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
 [ -L %{htmllibdir}/html/en ] || ln -fs en-us %{htmllibdir}/html/en
-[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/pl
+[ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
 /sbin/chkconfig --add sqwebmail
 if [ -f /var/lock/subsys/sqwebmail ]; then
 	/etc/rc.d/init.d/sqwebmail restart 1>&2
@@ -247,8 +270,8 @@ fi
 
 %{imagedir}
 %{_prefix}
+%{_sbindir}/webgp
 
-#%attr(755,root,root) %{_sbindir}/*
 %dir %{_libexecdir}/authlib
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
@@ -260,10 +283,16 @@ fi
 %attr(755,root,root) %{_libexecdir}/sqwebmail/*
 
 %dir %{_sysconfdir}/sqwebmail
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc.dist
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook.dist
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/CHARSET
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE_PREF
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LOCALE
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/TIMEZONELIST
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/ISPELLDICT
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
 
 %attr(755,root,root) /etc/rc.d/init.d/sqwebmail
@@ -285,7 +314,7 @@ fi
 %defattr(644,root,root,755)
 %doc authlib/authldap.schema
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
-%{_sysconfdir}/sqwebmail/authldaprc.dist
+%{_sysconfdir}/sqwebmail/authldaprc
 %{_mandir}/man7/authldap.*
 %endif
 
@@ -293,7 +322,7 @@ fi
 %files mysql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
-%{_sysconfdir}/sqwebmail/authmysqlrc.dist
+%{_sysconfdir}/sqwebmail/authmysqlrc
 %{_mandir}/man7/authmysql.*
 %endif
 
@@ -301,14 +330,13 @@ fi
 %files pgsql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
-%{_sysconfdir}/sqwebmail/authpgsqlrc.dist
+%{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
 %if 0%{!?_without_userdb:1}
 %files userdb
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.userdb
-%{_sysconfdir}/sqwebmail/authpgsqlrc.dist
 %attr(755,root,root) %{_sbindir}/makeuserdb
 %attr(755,root,root) %{_sbindir}/pw2userdb
 %attr(755,root,root) %{_sbindir}/userdb
@@ -326,3 +354,6 @@ fi
 %defattr(644,root,root,755)
 %doc pcp_README.html
 %{_sbindir}/pcpd
+
+%files pl_html
+%{htmllibdir}/pl-pl/*
