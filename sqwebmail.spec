@@ -15,6 +15,15 @@ Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 Patch2:		%{name}-prowizorka.patch
 URL:		http://www.inter7.com/sqwebmail/
+BuildRequires:	expect
+BuildRequires:	gdbm-devel
+BuildRequires:	gnupg >= 1.0.4
+%{!?_without_mysql:BuildRequires:	mysql-devel}
+%{!?_without_ldap:BuildRequires:	openldap-devel}
+%{!?_without_pam:BuildRequires:		pam-devel}
+BuildRequires:	perl-base
+%{!?_without_pgsql:BuildRequires:	postgresql-devel}
+PreReq:		rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	crondaemon
 Requires:	expect
@@ -24,14 +33,6 @@ Requires:	mailcap
 Requires:	perl
 %{!?_without_ispell:Requires:	ispell}
 %{!?_without_ssl:Requires:	apache-mod_ssl}
-BuildRequires:	expect
-BuildRequires:	gdbm-devel
-BuildRequires:	gnupg >= 1.0.4
-%{!?_without_mysql:BuildRequires:	mysql-devel}
-%{!?_without_ldap:BuildRequires:	openldap-devel}
-%{!?_without_pgsql:BuildRequires:	postgresql-devel}
-%{!?_without_pam:BuildRequires:		pam-devel}
-BuildRequires:	perl
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define httpddir                /home/services/httpd
@@ -48,7 +49,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define _bindir			/usr/bin
 %define _mandir			/usr/share/man
 %define _libexecdir             /usr/lib/sqwebmail
-%define	_sysconfdir		/etc
 
 %define cacheowner              bin
 %define sqwebmailowner          root
@@ -250,13 +250,12 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
            $RPM_BUILD_ROOT%{cachedir} \
 	   $RPM_BUILD_ROOT%{authdaemonvar}
 
-%{__make} install DESTDIR=$RPM_BUILD_ROOT
-
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
 
 install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
 install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
-
 
 %if 0%{!?_without_ldap:1}
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
@@ -301,7 +300,6 @@ install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
-
 tar zxf %{SOURCE3}
 install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl
 
@@ -341,7 +339,6 @@ fi
 
 %preun pl_html
 [ ! -L %{htmllibdir}/html/pl ] || rm -f %{htmllibdir}/pl
-
 
 %files
 %defattr(644,root,root,755)
