@@ -1,6 +1,6 @@
 #
 # TODO
-#	- triggers, tests
+#	- tests
 #
 # Conditional build:
 %bcond_without	ispell
@@ -11,12 +11,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	5.0.0
+Version:	5.0.1
 Release:	0.1
 License:	GPL
 Group:		Applications/Mail
-Source0:	http://www.courier-mta.org/beta/sqwebmail/%{name}-%{version}.tar.bz2
-# Source0-md5:	f6d57fd7b1cbf7044d5d20e89d147b22
+Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
+# Source0-md5:	43bdf4521e8512411da5dad53395ca68
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 %{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
@@ -24,12 +24,12 @@ Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-prowizorka.patch
 Patch2:		%{name}-maildir.patch
 Patch3:		%{name}-init.patch
-Patch4:		%{name}-build.patch
-URL:		http://www.inter7.com/sqwebmail/
+URL:		http://www.courier-mta.org/sqwebmail/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	courier-authlib-devel
 BuildRequires:	expect
+BuildRequires:	fam-devel
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
 # perhaps only because of test sources written in C, but with ".C" extension(?)
@@ -57,7 +57,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define	httpddir		/home/services/httpd
 %define	cgibindir		%{httpddir}/cgi-bin
-%define	imagedir		%{_datadir}/sqwebmail/html/webmail
+%define	imagedir		%{_datadir}/sqwebmail/images
 %define	imageurl		/webmail
 
 %define	cacheowner		bin
@@ -102,7 +102,6 @@ install %{SOURCE2} sqwebmail.init.in
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
 rm -f missing
@@ -145,7 +144,6 @@ install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{_d
 %endif
 
 rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
-mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook
 cp pcp/README.html pcp_README.html
 echo net >$RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/calendarmode
 
@@ -154,8 +152,8 @@ touch $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/en/ISPELLDICT
 %endif
 
 # make config file
-./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/sqwebmaild.dist
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/sqwebmaild.dist
+./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/*.dist
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/*.dist
 
 # delete man pages in conflict with courier-imap
 rm -f $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota*
@@ -172,13 +170,16 @@ install %{name}.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd
 rm -rf $RPM_BUILD_ROOT
 
 %post
-if [ -f /etc/httpd/httpd.conf ] && ! grep -q "^Include.*%{name}.conf" /etc/httpd; then
-    echo "Include /etc/httpd/%{name}.conf" >> /etc/httpd/httpd.conf
+if [ -f /etc/apache/apache.conf ] && ! grep -q "^Include.*%{name}.conf" /etc/apache/apache.conf; then
+    echo "Include /etc/httpd/%{name}.conf" >> /etc/apache/apache.conf
+    if [ -f /var/lock/subsys/apache ]; then
+        /etc/rc.d/init.d/apache restart 1>&2
+    fi
 elif [ -d /etc/httpd/httpd.conf ]; then
     ln -sf /etc/httpd/%{name}.conf /etc/httpd/httpd.conf/99_%{name}.conf
-fi
-if [ -f /var/lock/subsys/httpd ]; then
-    /usr/sbin/apachectl restart 1>&2
+    if [ -f /var/lock/subsys/httpd ]; then
+	/usr/sbin/apachectl restart 1>&2
+    fi
 fi
 
 [ -L %{_datadir}/sqwebmail/html/en ] || ln -fs en-us %{_datadir}/sqwebmail/html/en
@@ -192,16 +193,19 @@ fi
 %preun
 if [ "$1" = "0" ]; then
     umask 027
-        if [ -d /etc/httpd/httpd.conf ]; then
-                rm -f /etc/httpd/httpd.conf/99_%{name}.conf
-        else
-                grep -v "^Include.*%{name}.conf" /etc/httpd/httpd.conf > \
-                        /etc/httpd/httpd.conf.tmp
-                mv -f /etc/httpd/httpd.conf.tmp /etc/httpd/httpd.conf
-                if [ -f /var/lock/subsys/httpd ]; then
-                        /usr/sbin/apachectl restart 1>&2
-                fi
+    if [ -d /etc/httpd/httpd.conf ]; then
+	rm -f /etc/httpd/httpd.conf/99_%{name}.conf
+        if [ -f /var/lock/subsys/httpd ]; then
+    	    /usr/sbin/apachectl restart 1>&2
         fi
+    elif [ -f /etc/apache/apache.conf ]; then
+        grep -v "^Include.*%{name}.conf" /etc/apache/apache.conf > \
+        /etc/apache/apache.conf.tmp
+        mv -f /etc/apache/apache.conf.tmp /etc/apache/apache.conf
+        if [ -f /var/lock/subsys/apache ]; then
+            /etc/rc.d/init.d/apache restart 1>&2
+        fi
+    fi
 fi
 
 if [ "$1" = "0" ]; then
@@ -275,6 +279,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %dir %{_datadir}/sqwebmail
 %dir %{_datadir}/sqwebmail/html
 %dir %{_datadir}/sqwebmail/html/en-us
+%{_datadir}/sqwebmail/images
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/CHARSET
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE_PREF
