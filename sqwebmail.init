@@ -53,7 +53,7 @@ case "$1" in
 		# Stop daemons.
 		msg_stopping sqwebmail
 		killproc sqwebmaild
-		killproc authdaemond
+		$DIR/authlib/authdaemond $1
 		if ps -A|grep -q pcpd; then
 		 killproc pcpd
 		fi
