@@ -10,7 +10,6 @@ Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
-# Source3-md5:	90d67b405d5e9d617c9c60c88aa4acec
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 URL:		http://www.inter7.com/sqwebmail/
