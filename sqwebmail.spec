@@ -349,6 +349,10 @@ echo -n >$RPM_BUILD_ROOT%{_sysconfdir}/calendarmode
 touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
 %endif
 
+# delete man pages in conflict with courier-imap
+rm -f 	$RPM_BUILD_ROOT%{_mandir}/man8/deliverquota* \
+	$RPM_BUILD_ROOT%{_mandir}/man7/auth*
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -426,10 +430,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
 %dir %{authdaemonvar}
-%{_mandir}/man7/authlib.*
-%{_mandir}/man7/authdaemon.*
-%{_mandir}/man7/authdaemond.*
-%{_mandir}/man8/deliverquota.*
 
 %if %{with ldap}
 %files auth-ldap
@@ -437,7 +437,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %doc authlib/authldap.schema
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
 %{_sysconfdir}/sqwebmail/authldaprc
-%{_mandir}/man7/authldap.*
 %endif
 
 %if %{with mysql}
@@ -445,7 +444,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
 %{_sysconfdir}/sqwebmail/authmysqlrc
-%{_mandir}/man7/authmysql.*
 %endif
 
 %if %{with pgsql}
@@ -464,7 +462,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,root,root) %{_sbindir}/userdb
 %attr(755,root,root) %{_sbindir}/userdbpw
 %attr(755,root,root) %{_sbindir}/vchkpw2userdb
-%{_mandir}/man7/authuserdb.7*
 %{_mandir}/man8/makeuserdb.8*
 %{_mandir}/man8/pw2userdb.8*
 %{_mandir}/man8/userdb.8*
@@ -476,28 +473,24 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %files auth-pam
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authpam
-%{_mandir}/man7/authpam.*
 %endif
 
 %if %{with pwd}
 %files auth-pwd
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
-%{_mandir}/man7/authpwd.*
 %endif
 
 %if %{with shadow}
 %files auth-shadow
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authshadow
-%{_mandir}/man7/authshadow.*
 %endif
 
 %if %{with cram}
 %files auth-cram
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authcram
-%{_mandir}/man7/authcram.*
 %endif
 
 %files calendar
