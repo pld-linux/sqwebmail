@@ -6,9 +6,11 @@ Release:	0.9
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
+# Source0-md5:	7c95890cd0ffcd374b843810efac07d3
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
+# Source3-md5:	702b4075c7e8b6ae71c895a8bb803aa9
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-mysqlauth.patch
 Patch2:		%{name}-prowizorka.patch
