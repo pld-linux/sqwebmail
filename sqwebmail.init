@@ -6,6 +6,7 @@
 #
 # description:	SqWebMail is a Webmail CGI for Maildir mailboxes.
 
+DIR="@libexecdir@"
 
 # Source function library
 . /etc/rc.d/init.d/functions
@@ -30,8 +31,6 @@ case "$1" in
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/sqwebmail ]; then
 		msg_starting sqwebmail
-		DIR="/usr/lib/sqwebmail"
-
 		daemon $DIR/authlib/authdaemond $1
 
 	        case "`cat /etc/sqwebmail/calendarmode 2>/dev/null`" in
