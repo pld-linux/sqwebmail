@@ -271,7 +271,7 @@ rm -f missing
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sqwebmail/{shared,shared.tmp},pam.d} \
-	   $RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,cron.hourly,rc.d/init.d} \
+	$RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,cron.hourly,rc.d/init.d} \
 %{?with_pl:$RPM_BUILD_ROOT%{htmllibdir}/html/pl-pl}
 
 %{__make} install \
@@ -369,27 +369,27 @@ fi
 
 %post calendar
 if [ -f /var/run/sqwebmaild.pid.pcp ]; then
-    %{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -stop
-    rm -f /var/run/sqwebmaild.pid.pcp
-    %{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -start \
-    %{_libexecdir}/sqwebmail/pcpd server
+	%{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -stop
+	rm -f /var/run/sqwebmaild.pid.pcp
+	%{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -start \
+		%{_libexecdir}/sqwebmail/pcpd server
 else
 	if [ -f /var/lock/subsys/sqwebmail ]; then
-	    echo
-	    echo Type "/etc/rc.d/init.d/sqwebmail restart" to start sqwebmail with calendar
-	    echo
+		echo
+		echo Type "/etc/rc.d/init.d/sqwebmail restart" to start sqwebmail with calendar
+		echo
 	else
-	    echo
-	    echo Type "/etc/rc.d/init.d/sqwebmail start" to start sqwebmail with calendar
-	    echo
+		echo
+		echo Type "/etc/rc.d/init.d/sqwebmail start" to start sqwebmail with calendar
+		echo
 	fi
 fi
 	
 %preun calendar
 if [ "$1" = "0" ]; then
 	if [ -f /var/run/sqwebmaild.pid.pcp ]; then
-	    %{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -stop
-	    rm -f /var/run/sqwebmaild.pid.pcp
+		%{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -stop
+		rm -f /var/run/sqwebmaild.pid.pcp
 	fi
 fi
 
