@@ -176,16 +176,16 @@ rm -rf $RPM_BUILD_ROOT
 # apache1
 if [ -d %{_apache1dir}/conf.d ]; then
 	ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache1dir}/conf.d/99_%{name}.conf
-        if [ -f /var/lock/subsys/apache ]; then
-	        /etc/rc.d/init.d/apache restart 1>&2
-        fi
+	if [ -f /var/lock/subsys/apache ]; then
+		/etc/rc.d/init.d/apache restart 1>&2
+	fi
 fi
 # apache2
 if [ -d %{_apache2dir}/httpd.conf ]; then
-        ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache2dir}/httpd.conf/99_%{name}.conf
-        if [ -f /var/lock/subsys/httpd ]; then
-                /etc/rc.d/init.d/httpd restart 1>&2
-        fi
+	ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache2dir}/httpd.conf/99_%{name}.conf
+	if [ -f /var/lock/subsys/httpd ]; then
+		/etc/rc.d/init.d/httpd restart 1>&2
+	fi
 fi
 
 [ -L %{_datadir}/sqwebmail/html/en ] || ln -fs en-us %{_datadir}/sqwebmail/html/en
@@ -199,20 +199,20 @@ fi
 %preun
 if [ "$1" = "0" ]; then
 	umask 027
-        # apache1
-        if [ -d %{_apache1dir}/conf.d ]; then
-                rm -f %{_apache1dir}/conf.d/99_%{name}.conf
-                if [ -f /var/lock/subsys/apache ]; then
-                        /etc/rc.d/init.d/apache restart 1>&2
-                fi
-        fi
-        # apache2
-        if [ -d %{_apache2dir}/httpd.conf ]; then
-                rm -f %{_apache2dir}/httpd.conf/99_%{name}.conf
-                if [ -f /var/lock/subsys/httpd ]; then
-                        /etc/rc.d/init.d/httpd restart 1>&2
-                fi
-        fi
+	# apache1
+	if [ -d %{_apache1dir}/conf.d ]; then
+		rm -f %{_apache1dir}/conf.d/99_%{name}.conf
+		if [ -f /var/lock/subsys/apache ]; then
+			/etc/rc.d/init.d/apache restart 1>&2
+		fi
+	fi
+	# apache2
+	if [ -d %{_apache2dir}/httpd.conf ]; then
+		rm -f %{_apache2dir}/httpd.conf/99_%{name}.conf
+		if [ -f /var/lock/subsys/httpd ]; then
+			/etc/rc.d/init.d/httpd restart 1>&2
+		fi
+	fi
 
 	/sbin/chkconfig --del sqwebmail
 	if [ -f /var/lock/subsys/sqwebmail ]; then
