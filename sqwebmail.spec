@@ -20,11 +20,11 @@ Requires:	gnupg >= 1.0.4
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
-%{!?_without_mysql:BuildRequires:     mysql-devel}
-BuildRequires:	openldap-devel
+%{!?_without_mysql:BuildRequires:	mysql-devel}
+%{!?_without_ldap:BuildRequires:	openldap-devel}
+%{!?_without_pgsql:BuildRequires:	postgresql-devel}
 BuildRequires:	pam-devel
 BuildRequires:	perl
-BuildRequires:	postgresql-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define httpddir                /home/services/httpd
@@ -109,6 +109,8 @@ tabeli w bazie PostgreSQL.
 %configure --sysconfdir=%{_sysconfdir}/sqwebmail \
 	   --libexecdir=%{_libexecdir} \
 	   --enable-cgibindir=%{cgibindir} \
+%{!?_without_ldap: --with-authldap} \
+%{!?_without_pgsql: --with-authpgsql} \
 %{!?_without_mysql: --without-authvchkpw} \
 %{!?_without_mysql: --enable-mysql=y} \
 %{!?_without_mysql: --with-mysql-include=/usr/include/mysql} \
@@ -146,11 +148,22 @@ install -m 0444 sqwebmail/webmail.authpam $RPM_BUILD_ROOT/etc/pam.d/calendar
 install authmodulelist $RPM_BUILD_ROOT%{_prefix}/authmodulelist
 #install configlist $RPM_BUILD_ROOT%{htmllibdir}/configlist
 install sysconftool $RPM_BUILD_ROOT%{_prefix}/sysconftool
-install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
+#install authlib/authdaemond $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond
+
+%if 0%{!?_without_ldap:1}
 install authlib/authdaemond.ldap $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.ldap
-install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
+%endif
+
+%if 0%{!?_without_mysql:1}
 install authlib/authdaemond.mysql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.mysql
+%endif
+
+%if 0%{!?_without_pgsql:1}
+install authlib/authdaemond.pgsql $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.pgsql
+%endif
+
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
+install authlib/authsystem.passwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authsystem.passwd
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
@@ -209,6 +222,7 @@ fi
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc.dist
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook.dist
+%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
 %attr(644, root, root) %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
 
 %attr(755,root,root) /etc/rc.d/init.d/sqwebmail
@@ -219,10 +233,12 @@ fi
 
 %{_mandir}/man?/*
 
+%if 0%{!?_without_ldap:1}
 %files ldap
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
 %{_sysconfdir}/sqwebmail/authldaprc.dist
+%endif
 
 %if 0%{!?_without_mysql:1}
 %files mysql
@@ -231,7 +247,9 @@ fi
 %{_sysconfdir}/sqwebmail/authmysqlrc.dist
 %endif
 
+%if 0%{!?_without_pgsql:1}
 %files pgsql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
 %{_sysconfdir}/sqwebmail/authpgsqlrc.dist
+%endif
