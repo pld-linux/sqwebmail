@@ -14,7 +14,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	4.0.2
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -58,8 +58,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define	imageurl		/webmail
 
 %define	htmllibdir		/usr/share/sqwebmail
-%define	cachedir		/var/cache/sqwebmail
-%define	authdaemonvar		/var/cache/authdaemonvar
+%define	_localstatedir		/var/spool/sqwebmail
 
 %define	_prefix			%{htmllibdir}
 %define	_sbindir		/usr/sbin
@@ -243,6 +242,7 @@ rm -f missing
 %configure \
 	--sysconfdir=%{_sysconfdir}/sqwebmail \
 	--libexecdir=%{_libexecdir} \
+	--localstatedir=%{_localstatedir} \
 	--enable-cgibindir=%{cgibindir} \
 	%{?with_ldap:--with-authldap} \
 	%{?with_pam:--with-authpam} \
@@ -260,11 +260,10 @@ rm -f missing
 	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
 	--enable-mimetypes=/etc/mime.types \
 	--enable-imageurl=%{imagedir} \
-	--with-cachedir=%{cachedir} \
 	--enable-imagedir=%{imagedir} \
 	--enable-imageurl=%{imageurl} \
+	--with-cachedir=%{_localstatedir}/tmp \
 	--with-cacheowner=%{cacheowner} \
-	--with-authdaemonvar=%{authdaemonvar} \
 	--with-mailer=%{_sbindir}/sendmail
 %{__make}
 
@@ -280,8 +279,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
 	   $RPM_BUILD_ROOT%{cgibindir} \
 	   $RPM_BUILD_ROOT%{imagedir} \
 	   $RPM_BUILD_ROOT%{_prefix} \
-	   $RPM_BUILD_ROOT%{cachedir} \
-	   $RPM_BUILD_ROOT%{authdaemonvar}
+	   $RPM_BUILD_ROOT%{_localstatedir}/{authdaemon,calendar,tmp}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -429,8 +427,10 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(754,root,root) /etc/rc.d/init.d/sqwebmail
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
 
-%attr(700, %{cacheowner}, bin) %dir %{cachedir}
-%dir %{authdaemonvar}
+%attr(771,daemon,daemon) %dir %{_localstatedir}
+%attr(770,daemon,daemon) %dir %{_localstatedir}/authdaemon
+%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar
+%attr(700,%{cacheowner},bin) %dir %{_localstatedir}/tmp
 
 %if %{with ldap}
 %files auth-ldap
