@@ -27,6 +27,7 @@ Patch1:		%{name}-mysqlauth.patch
 Patch2:		%{name}-prowizorka.patch
 Patch3:		%{name}-maildir.patch
 Patch4:         %{name}-no_res_query.patch
+Patch5: 	%{name}-init.patch
 URL:		http://www.inter7.com/sqwebmail/
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -65,7 +66,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define _sbindir		/usr/sbin
 %define _bindir			/usr/bin
 %define _mandir			/usr/share/man
-%define _libexecdir             /usr/lib/sqwebmail
+%define _libexecdir             /usr/%{_lib}/sqwebmail
 
 %define cacheowner              bin
 %define sqwebmailowner          root
@@ -220,20 +221,26 @@ Polskie t³umaczenie interfejsu.
 
 %prep
 %setup -q
+install %{SOURCE2} sqwebmail.init.in
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
-cp -f /usr/share/automake/config.sub .
-
 cd authlib
 %{__aclocal}
 %{__autoconf}
 %{__automake}
 cd ..
+
+rm -f missing
+%{__libtoolize}
+%{__aclocal}
+%{__autoconf}
+%{__automake}
 
 %configure \
 	--sysconfdir=%{_sysconfdir}/sqwebmail \
@@ -250,7 +257,7 @@ cd ..
 	%{?with_mysql:--without-authvchkpw} \
 	%{?with_mysql:--enable-mysql=y} \
 	%{?with_mysql:--with-mysql-include=/usr/include/mysql} \
-	%{?with_mysql:--with-mysql-libs=/usr/lib} \
+	%{?with_mysql:--with-mysql-libs=/usr/%{_lib}} \
 	%{?with_ssl:--enable-https} \
 	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
 	--enable-mimetypes=/etc/mime.types \
@@ -325,7 +332,7 @@ install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaem
 install pcpd $RPM_BUILD_ROOT%{_sbindir}
 install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
-install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
+install sqwebmail.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
 
 %if %{with pl}
 tar zxf %{SOURCE3}
