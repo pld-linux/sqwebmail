@@ -22,8 +22,8 @@ Requires:	gnupg >= 1.0.4
 Requires:	apache
 Requires:	mailcap
 Requires:	perl
-%{!?_without_ispell:Requires: ispell}
-%{!?_without_ssl:Requires: apache-mod_ssl}
+%{!?_without_ispell:Requires:	ispell}
+%{!?_without_ssl:Requires:	apache-mod_ssl}
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
@@ -107,11 +107,11 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 tabeli w bazie PostgreSQL.
 
 %package auth-userdb
-Summary:        SqWebMail userdb authentication driver
-Summary(pl):    Sterownik uwierzytelnienia userdb dla SqWebMaila
-Group:          Applications/Mail
+Summary:	SqWebMail userdb authentication driver
+Summary(pl):	Sterownik uwierzytelnienia userdb dla SqWebMaila
+Group:		Applications/Mail
 Obsoletes:	courier-imap-userdb
-Requires:       %{name} = %{version}
+Requires:	%{name} = %{version}
 
 %description auth-userdb
 This package contains the necessary files to allow SqWebMail to
@@ -122,10 +122,10 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku userdb.
 
 %package auth-pam
-Summary:        SqWebMail pam authentication driver
-Summary(pl):    Sterownik uwierzytelnienia pam dla SqWebMaila
-Group:          Applications/Mail
-Requires:       %{name} = %{version}
+Summary:	SqWebMail pam authentication driver
+Summary(pl):	Sterownik uwierzytelnienia pam dla SqWebMaila
+Group:		Applications/Mail
+Requires:	%{name} = %{version}
 
 %description auth-pam
 This package contains the necessary files to allow SqWebMail to
@@ -136,10 +136,10 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 biblioteki pam.
 
 %package auth-pwd
-Summary:        SqWebMail pwd authentication driver
-Summary(pl):    Sterownik uwierzytelnienia pwd dla SqWebMaila
-Group:          Applications/Mail
-Requires:       %{name} = %{version}
+Summary:	SqWebMail pwd authentication driver
+Summary(pl):	Sterownik uwierzytelnienia pwd dla SqWebMaila
+Group:		Applications/Mail
+Requires:	%{name} = %{version}
 
 %description auth-pwd
 This package contains the necessary files to allow SqWebMail to
@@ -150,10 +150,10 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku /etc/passwd.
 
 %package auth-shadow
-Summary:        SqWebMail shadow authentication driver
-Summary(pl):    Sterownik uwierzytelnienia shadow dla SqWebMaila
-Group:          Applications/Mail
-Requires:       %{name} = %{version}
+Summary:	SqWebMail shadow authentication driver
+Summary(pl):	Sterownik uwierzytelnienia shadow dla SqWebMaila
+Group:		Applications/Mail
+Requires:	%{name} = %{version}
 
 %description auth-shadow
 This package contains the necessary files to allow SqWebMail to
@@ -164,10 +164,10 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku /etc/shadow.
 
 %package auth-cram
-Summary:        SqWebMail cram authentication driver
-Summary(pl):    Sterownik uwierzytelnienia cram dla SqWebMaila
-Group:          Applications/Mail
-Requires:       %{name} = %{version}
+Summary:	SqWebMail cram authentication driver
+Summary(pl):	Sterownik uwierzytelnienia cram dla SqWebMaila
+Group:		Applications/Mail
+Requires:	%{name} = %{version}
 
 %description auth-cram
 This package contains the necessary files to allow SqWebMail to
@@ -178,10 +178,10 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 mechanizmu cram.
 
 %package calendar
-Summary:        SqWebMail calendar
-Summary(pl):    Kalendarz dla SqWebMaila
-Group:          Applications/Mail
-Requires:       %{name} = %{version}
+Summary:	SqWebMail calendar
+Summary(pl):	Kalendarz dla SqWebMaila
+Group:		Applications/Mail
+Requires:	%{name} = %{version}
 
 %description calendar
 SqWebMail Calendar.
@@ -192,8 +192,8 @@ Kalendarz SqWebMaila.
 %package pl_html
 Summary:	SqWebMail - Polish translation
 Summary(pl):	Sqwebmail - polska wersja interfejsu
-Group:          Applications/Mail
-Requires:       %{name} = %{version}
+Group:		Applications/Mail
+Requires:	%{name} = %{version}
 
 %description pl_html
 Polish translation.
@@ -208,31 +208,31 @@ Polskie t³umaczenie interfejsu.
 %patch2 -p1
 
 %build
-%configure --sysconfdir=%{_sysconfdir}/sqwebmail \
-	   --libexecdir=%{_libexecdir} \
-	   --enable-cgibindir=%{cgibindir} \
-%{!?_without_ldap: --with-authldap} \
-%{!?_without_pam: --with-authpam} \
-%{!?_without_pwd: --with-authpwd} \
-%{!?_without_pwd: --with-authshadow} \
-%{!?_without_cram: --with-authcram} \
-%{!?_without_userdb: --with-authuserdb} \
-%{!?_without_userdb: --with-userdb=%{_sysconfdir}/sqwebmail/userdb } \
-%{!?_without_pgsql: --with-authpgsql} \
-%{!?_without_mysql: --without-authvchkpw} \
-%{!?_without_mysql: --enable-mysql=y} \
-%{!?_without_mysql: --with-mysql-include=/usr/include/mysql} \
-%{!?_without_mysql: --with-mysql-libs=/usr/lib} \
-%{!?_without_ssl: --enable-https} \
-%{!?_without_ispell:	--with-ispell=/usr/bin/ispell} \
-	   --enable-mimetypes=/etc/mime.types \
-	   --enable-imageurl=%{imagedir} \
-	   --with-cachedir=%{cachedir} \
-	   --enable-imagedir=%{imagedir} \
-	   --enable-imageurl=%{imageurl} \
-	   --with-cacheowner=%{cacheowner} \
-	   --with-authdaemonvar=%{authdaemonvar} \
-
+%configure \
+	--sysconfdir=%{_sysconfdir}/sqwebmail \
+	--libexecdir=%{_libexecdir} \
+	--enable-cgibindir=%{cgibindir} \
+	%{!?_without_ldap:--with-authldap} \
+	%{!?_without_pam:--with-authpam} \
+	%{!?_without_pwd:--with-authpwd} \
+	%{!?_without_pwd:--with-authshadow} \
+	%{!?_without_cram:--with-authcram} \
+	%{!?_without_userdb:--with-authuserdb} \
+	%{!?_without_userdb:--with-userdb=%{_sysconfdir}/sqwebmail/userdb } \
+	%{!?_without_pgsql:--with-authpgsql} \
+	%{!?_without_mysql:--without-authvchkpw} \
+	%{!?_without_mysql:--enable-mysql=y} \
+	%{!?_without_mysql:--with-mysql-include=/usr/include/mysql} \
+	%{!?_without_mysql:--with-mysql-libs=/usr/lib} \
+	%{!?_without_ssl:--enable-https} \
+	%{!?_without_ispell:--with-ispell=/usr/bin/ispell} \
+	--enable-mimetypes=/etc/mime.types \
+	--enable-imageurl=%{imagedir} \
+	--with-cachedir=%{cachedir} \
+	--enable-imagedir=%{imagedir} \
+	--enable-imageurl=%{imageurl} \
+	--with-cacheowner=%{cacheowner} \
+	--with-authdaemonvar=%{authdaemonvar}
 %{__make}
 
 %install
@@ -433,28 +433,28 @@ fi
 
 %if 0%{!?_without_pam:1}
 %files auth-pam
-%defattr(644,root,root,755) 
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authpam
 %{_mandir}/man7/authpam.*
 %endif
 
 %if 0%{!?_without_pwd:1}
 %files auth-pwd
-%defattr(644,root,root,755) 
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
 %{_mandir}/man7/authpwd.*
 %endif
 
 %if 0%{!?_without_shadow:1}
 %files auth-shadow
-%defattr(644,root,root,755) 
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authshadow
 %{_mandir}/man7/authshadow.*
 %endif
 
 %if 0%{!?_without_cram:1}
 %files auth-cram
-%defattr(644,root,root,755) 
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authcram
 %{_mandir}/man7/authcram.*
 %endif
