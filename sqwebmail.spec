@@ -17,6 +17,7 @@ URL:		http://www.inter7.com/sqwebmail/
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
+# perhaps only because of test sources written in C, but with ".C" extension(?)
 BuildRequires:	libstdc++-devel
 %{!?_without_mysql:BuildRequires:	mysql-devel}
 %{!?_without_ldap:BuildRequires:	openldap-devel}
