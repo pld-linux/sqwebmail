@@ -90,7 +90,7 @@ need the ability to use a MySQL database table for authentication.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 tabeli w bazie MySQL.
 
-%package 	auth-pgsql
+%package auth-pgsql
 Summary:	SqWebMail PostgreSQL authentication driver
 Summary(pl):	Sterownik uwierzytelnienia PostgreSQL dla SqWebMaila
 Group:		Applications/Mail
@@ -106,7 +106,7 @@ authentication.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 tabeli w bazie PostgreSQL.
 
-%package        auth-userdb
+%package auth-userdb
 Summary:        SqWebMail userdb authentication driver
 Summary(pl):    Sterownik uwierzytelnienia userdb dla SqWebMaila
 Group:          Applications/Mail
@@ -121,7 +121,7 @@ authenticate using a userdb file.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku userdb.
 
-%package        auth-pam
+%package auth-pam
 Summary:        SqWebMail pam authentication driver
 Summary(pl):    Sterownik uwierzytelnienia pam dla SqWebMaila
 Group:          Applications/Mail
@@ -135,7 +135,7 @@ authenticate using a pam.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 biblioteki pam.
 
-%package        auth-pwd
+%package auth-pwd
 Summary:        SqWebMail pwd authentication driver
 Summary(pl):    Sterownik uwierzytelnienia pwd dla SqWebMaila
 Group:          Applications/Mail
@@ -149,7 +149,7 @@ authenticates from the /etc/passwd file.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku /etc/passwd.
 
-%package        auth-shadow
+%package auth-shadow
 Summary:        SqWebMail shadow authentication driver
 Summary(pl):    Sterownik uwierzytelnienia shadow dla SqWebMaila
 Group:          Applications/Mail
@@ -163,7 +163,7 @@ authenticates from the /etc/shadow file.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku /etc/shadow.
 
-%package        auth-cram
+%package auth-cram
 Summary:        SqWebMail cram authentication driver
 Summary(pl):    Sterownik uwierzytelnienia cram dla SqWebMaila
 Group:          Applications/Mail
@@ -177,30 +177,29 @@ authenticate using cram mechanism.
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 mechanizmu cram.
 
-%package        calendar
+%package calendar
 Summary:        SqWebMail calendar
 Summary(pl):    Kalendarz dla SqWebMaila
 Group:          Applications/Mail
 Requires:       %{name} = %{version}
 
 %description calendar
-Calendar
+SqWebMail Calendar.
 
 %description calendar -l pl
-Kalendarz
+Kalendarz SqWebMaila.
 
 %package pl_html
-Summary:        SqWebMail - Polish translation
-Summary(pl):    Sqwebmail - Wersja polska interfejsu
+Summary:	SqWebMail - Polish translation
+Summary(pl):	Sqwebmail - polska wersja interfejsu
 Group:          Applications/Mail
 Requires:       %{name} = %{version}
 
 %description pl_html
-Polish translation
+Polish translation.
 
 %description pl_html -l pl
-Polskie t³umaczenie interfejsu
-
+Polskie t³umaczenie interfejsu.
 
 %prep
 %setup -q
@@ -209,8 +208,6 @@ Polskie t³umaczenie interfejsu
 %patch2 -p1
 
 %build
-
-
 %configure --sysconfdir=%{_sysconfdir}/sqwebmail \
 	   --libexecdir=%{_libexecdir} \
 	   --enable-cgibindir=%{cgibindir} \
@@ -423,12 +420,12 @@ fi
 %attr(755,root,root) %{_sbindir}/userdb
 %attr(755,root,root) %{_sbindir}/userdbpw
 %attr(755,root,root) %{_sbindir}/vchkpw2userdb
-%{_mandir}/man7/authuserdb.7.gz
-%{_mandir}/man8/makeuserdb.8.gz
-%{_mandir}/man8/pw2userdb.8.gz
-%{_mandir}/man8/userdb.8.gz
-%{_mandir}/man8/userdbpw.8.gz
-%{_mandir}/man8/vchkpw2userdb.8.gz
+%{_mandir}/man7/authuserdb.7*
+%{_mandir}/man8/makeuserdb.8*
+%{_mandir}/man8/pw2userdb.8*
+%{_mandir}/man8/userdb.8*
+%{_mandir}/man8/userdbpw.8*
+%{_mandir}/man8/vchkpw2userdb.8*
 %endif
 
 %if 0%{!?_without_pam:1}
@@ -466,10 +463,11 @@ fi
 %{_sbindir}/pcpd
 
 %files pl_html
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/CHARSET
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE_PREF
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LOCALE
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/TIMEZONELIST
-%attr(644, root, root) %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/ISPELLDICT
+%defattr(644,root,root,755)
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/CHARSET
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE_PREF
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LOCALE
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/TIMEZONELIST
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/ISPELLDICT
 %{htmllibdir}/html/pl-pl/*.html
