@@ -279,7 +279,8 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
 	   $RPM_BUILD_ROOT%{cgibindir} \
 	   $RPM_BUILD_ROOT%{imagedir} \
 	   $RPM_BUILD_ROOT%{_prefix} \
-	   $RPM_BUILD_ROOT%{_localstatedir}/{authdaemon,calendar,tmp}
+	   $RPM_BUILD_ROOT%{_localstatedir}/{authdaemon,calendar,tmp} \
+	   $RPM_BUILD_ROOT%{_localstatedir}/calendar/{private,public}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -340,7 +341,7 @@ rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/authdaemonrc
 mv $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook.dist $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/ldapaddressbook
 cp pcp/README.html pcp_README.html
-echo -n >$RPM_BUILD_ROOT%{_sysconfdir}/calendarmode
+echo net >$RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/calendarmode
 
 %if %{with ispell}
 touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
@@ -429,7 +430,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 
 %attr(771,daemon,daemon) %dir %{_localstatedir}
 %attr(770,daemon,daemon) %dir %{_localstatedir}/authdaemon
-%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar
 %attr(700,%{cacheowner},bin) %dir %{_localstatedir}/tmp
 
 %if %{with ldap}
@@ -497,8 +497,11 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %files calendar
 %defattr(644,root,root,755)
 %doc pcp_README.html
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/calendarmode
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/calendarmode
 %attr(755,root,root) %{_sbindir}/pcpd
+%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar
+%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar/private
+%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar/public
 
 %if %{with pl}
 %files pl_html
