@@ -14,7 +14,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	4.0.3
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -269,8 +269,8 @@ rm -f missing
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
-	   $RPM_BUILD_ROOT/etc/{pam.d,rc.d/init.d,sysconfig,cron.hourly,sqwebmail} \
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sqwebmail/shared,pam.d,rc.d/init.d} \
+	   $RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,cron.hourly} \
 	   $RPM_BUILD_ROOT%{_libexecdir}/authlib \
 	   $RPM_BUILD_ROOT%{_sbindir} \
 	   $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
@@ -280,7 +280,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail \
 	   $RPM_BUILD_ROOT%{imagedir} \
 	   $RPM_BUILD_ROOT%{_prefix} \
 	   $RPM_BUILD_ROOT%{_localstatedir}/{authdaemon,calendar,tmp} \
-	   $RPM_BUILD_ROOT%{_localstatedir}/calendar/{private,public}
+	   $RPM_BUILD_ROOT%{_localstatedir}/calendar/{private,public,localcache}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -383,7 +383,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %defattr(644,root,root,755)
 %doc AUTHORS sqwebmail/BUGS INSTALL INSTALL.vchkpw NEWS README sqwebmail/SECURITY sqwebmail/TODO gpglib/README.html
 %doc sqwebmail/BUGS.html INSTALL.html NEWS.html README.html sqwebmail/SECURITY.html sqwebmail/TODO.html sqwebmail/ChangeLog
-%doc maildir/README*.html
+%doc maildir/README*.html gpglib/README.html
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
 
 %{imagedir}
@@ -402,6 +402,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,root,root) %{_libexecdir}/sqwebmail/*
 
 %dir %{_sysconfdir}/sqwebmail
+%attr(750,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authdaemonrc
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/authmodulelist
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
@@ -499,9 +500,10 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %doc pcp_README.html
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/calendarmode
 %attr(755,root,root) %{_sbindir}/pcpd
-%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar
-%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar/private
-%attr(770,daemon,daemon) %dir %{_localstatedir}/calendar/public
+%attr(751,daemon,daemon) %dir %{_localstatedir}/calendar
+%attr(750,daemon,daemon) %dir %{_localstatedir}/calendar/localcache
+%attr(750,daemon,daemon) %dir %{_localstatedir}/calendar/private
+%attr(755,daemon,daemon) %dir %{_localstatedir}/calendar/public
 
 %if %{with pl}
 %files pl_html
