@@ -47,7 +47,7 @@ Requires:	perl
 %{?with_ssl:Requires:	apache-mod_ssl}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define httpddir                /srv/httpd
+%define httpddir                /home/httpd
 %define cgibindir               %{httpddir}/cgi-bin
 %define imagedir                %{httpddir}/html/webmail
 %define imageurl                /webmail
