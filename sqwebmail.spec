@@ -158,11 +158,11 @@ touch $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/en/ISPELLDICT
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/sqwebmaild.dist
 
 # delete man pages in conflict with courier-imap
-rm -f	$RPM_BUILD_ROOT%{_mandir}/man8/deliverquota*
-rm -f	$RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
+rm -f $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota*
+rm -f $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
 
 # pam
-cp sqwebmail/sqwebmail.pamconf %{_sysconfdir}/pam.d/sqwebmail
+cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/webmail
 
 # for apache
 echo "Alias /webmail %{imagedir}" >%{name}.conf
@@ -259,7 +259,6 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,root,root) %{_sbindir}/sharedindexinstall
 %attr(755,root,root) %{_sbindir}/sharedindexsplit
 
-%dir %{_libexecdir}
 %dir %{_libexecdir}/sqwebmail
 %attr(755,root,root) %{_libexecdir}/sqwebmail/deliverquota
 %attr(755,root,root) %{_libexecdir}/sqwebmail/maildirmake
