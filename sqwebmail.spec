@@ -83,7 +83,7 @@ SqWebMail jest klientem pocztowym CGI dla skrzynek Maildir.
 Summary:	SqWebMail LDAP authentication driver
 Summary(pl):	Sterownik uwierzytelnienia LDAP dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-ldap
 This package contains the necessary files to allow SqWebMail to
@@ -97,7 +97,7 @@ Ten pakiet zawiera pliki niezbêdne do uwierzytelniania poprzez LDAP.
 Summary:	SqWebMail MySQL authentication driver
 Summary(pl):	Sterownik uwierzytelnienia MySQL dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-mysql
 This package contains the necessary files to allow SqWebMail to
@@ -112,7 +112,7 @@ tabeli w bazie MySQL.
 Summary:	SqWebMail PostgreSQL authentication driver
 Summary(pl):	Sterownik uwierzytelnienia PostgreSQL dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-pgsql
 This package contains the necessary files to allow SqWebMail to
@@ -129,7 +129,7 @@ Summary:	SqWebMail userdb authentication driver
 Summary(pl):	Sterownik uwierzytelnienia userdb dla SqWebMaila
 Group:		Applications/Mail
 Obsoletes:	courier-imap-userdb
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-userdb
 This package contains the necessary files to allow SqWebMail to
@@ -143,7 +143,7 @@ pliku userdb.
 Summary:	SqWebMail pam authentication driver
 Summary(pl):	Sterownik uwierzytelnienia pam dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-pam
 This package contains the necessary files to allow SqWebMail to
@@ -157,7 +157,7 @@ biblioteki pam.
 Summary:	SqWebMail pwd authentication driver
 Summary(pl):	Sterownik uwierzytelnienia pwd dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-pwd
 This package contains the necessary files to allow SqWebMail to
@@ -171,7 +171,7 @@ pliku /etc/passwd.
 Summary:	SqWebMail shadow authentication driver
 Summary(pl):	Sterownik uwierzytelnienia shadow dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-shadow
 This package contains the necessary files to allow SqWebMail to
@@ -185,7 +185,7 @@ pliku /etc/shadow.
 Summary:	SqWebMail cram authentication driver
 Summary(pl):	Sterownik uwierzytelnienia cram dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description auth-cram
 This package contains the necessary files to allow SqWebMail to
@@ -199,7 +199,7 @@ mechanizmu cram.
 Summary:	SqWebMail calendar
 Summary(pl):	Kalendarz dla SqWebMaila
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description calendar
 SqWebMail Calendar.
@@ -211,7 +211,7 @@ Kalendarz SqWebMaila.
 Summary:	SqWebMail - Polish translation
 Summary(pl):	Sqwebmail - polska wersja interfejsu
 Group:		Applications/Mail
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description pl_html
 Polish translation.
