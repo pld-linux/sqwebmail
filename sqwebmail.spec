@@ -40,7 +40,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define _prefix                 %{htmllibdir}
 %define _sbindir		/usr/sbin
 %define _bindir			/usr/bin
-%define _mandir			/usr/man
+%define _mandir			/usr/share/man
 %define _libexecdir             /usr/lib/sqwebmail
 %define	_sysconfdir		/etc
 
@@ -104,6 +104,7 @@ tabeli w bazie PostgreSQL.
 Summary:        SqWebMail userdb authentication driver
 Summary(pl):    Sterownik uwierzytelnienia userdb dla SqWebMaila
 Group:          Applications/Mail
+Obsoletes:	courier-imap-userdb
 Requires:       %{name} = %{version}
 
 %description userdb
@@ -125,7 +126,8 @@ pliku userdb.
 	   --libexecdir=%{_libexecdir} \
 	   --enable-cgibindir=%{cgibindir} \
 %{!?_without_ldap: --with-authldap} \
-%{!?_without_userdb: --with-dbauthuserdb } \
+%{!?_without_userdb: --with-authuserdb} \
+%{!?_without_userdb: --with-userdb=%{_sysconfdir}/sqwebmail/userdb } \
 %{!?_without_pgsql: --with-authpgsql} \
 %{!?_without_mysql: --without-authvchkpw} \
 %{!?_without_mysql: --enable-mysql=y} \
@@ -138,7 +140,6 @@ pliku userdb.
 	   --enable-imageurl=%{imageurl} \
 	   --with-cacheowner=%{cacheowner} \
 	   --with-authdaemonvar=%{authdaemonvar} \
-	   --with-userdb=%{_sysconfdir}/sqwebmail/userdb
 
 %{__make}
 
@@ -227,7 +228,7 @@ fi
 %{imagedir}
 %{_prefix}
 
-%attr(755,root,root) %{_sbindir}/*
+#%attr(755,root,root) %{_sbindir}/*
 %dir %{_libexecdir}/authlib
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
@@ -250,8 +251,16 @@ fi
 
 %attr(700, %{cacheowner}, bin) %dir %{cachedir}
 %dir %{authdaemonvar}
-
-%{_mandir}/man?/*
+#%{_mandir}/man?/*
+%{_mandir}/man1/maildirmake.*
+%{_mandir}/man7/authlib.*
+%{_mandir}/man7/authcram.*
+%{_mandir}/man7/authdaemon.*
+%{_mandir}/man7/authdaemond.*
+%{_mandir}/man7/authpam.*
+%{_mandir}/man7/authpwd.*
+%{_mandir}/man7/authshadow.*
+%{_mandir}/man8/deliverquota.*
 
 %if 0%{!?_without_ldap:1}
 %files ldap
@@ -259,6 +268,7 @@ fi
 %doc authlib/authldap.schema
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
 %{_sysconfdir}/sqwebmail/authldaprc.dist
+%{_mandir}/man7/authldap.*
 %endif
 
 %if 0%{!?_without_mysql:1}
@@ -266,6 +276,7 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
 %{_sysconfdir}/sqwebmail/authmysqlrc.dist
+%{_mandir}/man7/authmysql.*
 %endif
 
 %if 0%{!?_without_pgsql:1}
@@ -279,5 +290,16 @@ fi
 %files userdb
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.userdb
-#%{_sysconfdir}/sqwebmail/authpgsqlrc.dist
+%{_sysconfdir}/sqwebmail/authpgsqlrc.dist
+%attr(755,root,root) %{_sbindir}/makeuserdb
+%attr(755,root,root) %{_sbindir}/pw2userdb
+%attr(755,root,root) %{_sbindir}/userdb
+%attr(755,root,root) %{_sbindir}/userdbpw
+%attr(755,root,root) %{_sbindir}/vchkpw2userdb
+%{_mandir}/man7/authuserdb.7
+%{_mandir}/man8/makeuserdb.8.gz
+%{_mandir}/man8/pw2userdb.8
+%{_mandir}/man8/userdb.8.gz
+%{_mandir}/man8/userdbpw.8.gz
+%{_mandir}/man8/vchkpw2userdb.8
 %endif
