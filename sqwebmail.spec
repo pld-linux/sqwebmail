@@ -148,12 +148,17 @@ rm -rf $RPM_BUILD_ROOT
 %post
 [ -d %{htmllibdir}/html/en ] || ln -fs en-us %{htmllibdir}/html/en
 /sbin/chkconfig --add sqwebmail
+if [ -f /var/lock/subsys/sqwebmail ]; then
+	/etc/rc.d/init.d/sqwebmail restart 1>&2
+else
+	echo "Run \"/etc/rc.d/init.d/sqwebmail start\" to start sqwebmail daemon."
+fi
 
 %preun
 if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del sqwebmail
-	if [ -f /var/lock/subsys/sqwbmail ]; then
-		/etc/rc.d/init.d/sqwebmail stop
+	if [ -f /var/lock/subsys/sqwebmail ]; then
+		/etc/rc.d/init.d/sqwebmail stop 1>&2
 	fi
 	[ ! -L %{htmllibdir}/html/en ] || rm -f %{htmllibdir}/html/en
 fi
