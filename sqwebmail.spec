@@ -377,7 +377,10 @@ fi
 
 %post calendar
 if [ -f /var/run/sqwebmaild.pid.pcp ]; then
-	/etc/rc.d/init.d/sqwebmail restart 1>&2
+    %{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -stop
+    rm -f /var/run/sqwebmaild.pid.pcp
+    %{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -start \
+    %{_libexecdir}/sqwebmail/pcpd server
 else
 	if [ -f /var/lock/subsys/sqwebmail ]; then
 	    echo
