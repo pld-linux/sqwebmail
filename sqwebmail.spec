@@ -345,6 +345,10 @@ echo net >$RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/calendarmode
 touch $RPM_BUILD_ROOT%{htmllibdir}/html/en/ISPELLDICT
 %endif
 
+# make config file
+./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/sqwebmaild.dist
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/sqwebmaild.dist
+
 # delete man pages in conflict with courier-imap
 rm -f	$RPM_BUILD_ROOT%{_mandir}/man8/deliverquota* \
 	$RPM_BUILD_ROOT%{_mandir}/man7/auth*
