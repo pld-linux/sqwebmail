@@ -1,14 +1,14 @@
 # Conditional build:
-%bcond_without cram
-%bcond_without ispell
-%bcond_without ldap
-%bcond_without mysql
-%bcond_without pam
-%bcond_without pgsql
-%bcond_without pwd
-%bcond_without ssl
-%bcond_without userdb
-%bcond_with pl
+%bcond_without	cram
+%bcond_without	ispell
+%bcond_without	ldap
+%bcond_without	mysql
+%bcond_without	pam
+%bcond_without	pgsql
+%bcond_without	pwd
+%bcond_without	ssl
+%bcond_without	userdb
+%bcond_with	pl
 #
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
@@ -373,19 +373,19 @@ fi
 
 %post calendar
 if ps -A |grep -q pcpd; then
-    %{_libexecdir}/sqwebmail/pcpd stop
-    %{_libexecdir}/sqwebmail/pcpd start
+	%{_libexecdir}/sqwebmail/pcpd stop
+	%{_libexecdir}/sqwebmail/pcpd start
 else
-echo
-echo Type "%{_libexecdir}/sqwebmail/pcpd start" to start calendar
-echo
+	echo
+	echo Type "%{_libexecdir}/sqwebmail/pcpd start" to start calendar
+	echo
 fi
 	
 %preun calendar
 if [ "$1" = "0" ]; then
-    if ps -A |grep -q pcpd; then
-	%{_libexecdir}/sqwebmail/pcpd stop
-    fi
+	if ps -A |grep -q pcpd; then
+		%{_libexecdir}/sqwebmail/pcpd stop
+	fi
 fi
 
 %post pl_html
