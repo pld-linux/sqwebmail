@@ -1,17 +1,17 @@
 diff -Nur old/configure.in new/configure.in
---- old/configure.in	2003-11-28 00:46:44.000000000 +0000
-+++ new/configure.in	2004-02-23 22:57:26.000000000 +0000
-@@ -272,6 +272,7 @@
- 
+--- old/configure.in	2004-05-16 02:37:05.000000000 +0000
++++ new/configure.in	2004-06-01 22:32:22.000000000 +0000
+@@ -280,6 +280,7 @@
  test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
  eval "prefix=$prefix"
-+eval "DIR=$libexecdir"
  eval "libexecdir=$libexecdir"
++eval "DIR=$libexecdir"
  eval "localstatedir=$localstatedir"
  
-@@ -315,4 +316,4 @@
+ AC_ARG_WITH(makedatprog, [], ,
+@@ -325,4 +326,4 @@
  	makedat rfc822 rfc2045 maildir soxwrap \
  	authlib http11 cgi ldapaddressbook \
  	gpglib pcp sqwebmail)
--AC_OUTPUT(Makefile dbobj.h dbobj.config sqwebmail.spec)
-+AC_OUTPUT(Makefile dbobj.h dbobj.config sqwebmail.spec sqwebmail.init)
+-AC_OUTPUT(Makefile dbobj.h dbobj.config sqwebmail.spec sqwebmaild.rc)
++AC_OUTPUT(Makefile dbobj.h dbobj.config sqwebmail.spec sqwebmaild.rc sqwebmail.init)
