@@ -35,6 +35,7 @@ BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
 # perhaps only because of test sources written in C, but with ".C" extension(?)
 BuildRequires:	libstdc++-devel
+BuildRequires:	libtool
 %{?with_mysql:BuildRequires:	mysql-devel}
 %{?with_ldap:BuildRequires:	openldap-devel}
 %{?with_pam:BuildRequires:	pam-devel}
