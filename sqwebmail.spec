@@ -327,7 +327,6 @@ install authlib/authcram $RPM_BUILD_ROOT%{_libexecdir}/authlib/authcram
 %endif
 
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
-install pcpd $RPM_BUILD_ROOT%{_sbindir}
 install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
 install sqwebmail.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
@@ -372,6 +371,23 @@ if [ "$1" = "0" ]; then
 	[ ! -L %{htmllibdir}/html/en ] || rm -f %{htmllibdir}/html/en
 fi
 
+%post calendar
+if ps -A |grep -q pcpd; then
+    %{_libexecdir}/sqwebmail/pcpd stop
+    %{_libexecdir}/sqwebmail/pcpd start
+else
+echo
+echo Type "%{_libexecdir}/sqwebmail/pcpd start" to start calendar
+echo
+fi
+	
+%preun calendar
+if [ "$1" = "0" ]; then
+    if ps -A |grep -q pcpd; then
+	%{_libexecdir}/sqwebmail/pcpd stop
+    fi
+fi
+
 %post pl_html
 [ -L %{htmllibdir}/html/pl ] || ln -fs pl-pl %{htmllibdir}/html/pl
 echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
@@ -399,7 +415,13 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.plain
 %attr(755,root,root) %{_libexecdir}/authlib/authsystem.passwd
 %dir %{_libexecdir}/sqwebmail
-%attr(755,root,root) %{_libexecdir}/sqwebmail/*
+%attr(755,root,root) %{_libexecdir}/sqwebmail/authenumerate
+%attr(755,root,root) %{_libexecdir}/sqwebmail/deliverquota
+%attr(755,root,root) %{_libexecdir}/sqwebmail/maildirmake
+%attr(755,root,root) %{_libexecdir}/sqwebmail/makedatprog
+%attr(755,root,root) %{_libexecdir}/sqwebmail/makemime
+%attr(755,root,root) %{_libexecdir}/sqwebmail/reformime
+%attr(755,root,root) %{_libexecdir}/sqwebmail/sqwebmaild
 
 %dir %{_sysconfdir}/sqwebmail
 %attr(750,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
@@ -499,7 +521,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %defattr(644,root,root,755)
 %doc pcp_README.html
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/calendarmode
-%attr(755,root,root) %{_sbindir}/pcpd
+%attr(755,root,root) %{_libexecdir}/sqwebmail/pcpd
 %attr(751,daemon,daemon) %dir %{_localstatedir}/calendar
 %attr(750,daemon,daemon) %dir %{_localstatedir}/calendar/localcache
 %attr(750,daemon,daemon) %dir %{_localstatedir}/calendar/private
