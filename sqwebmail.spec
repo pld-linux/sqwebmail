@@ -1,12 +1,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	3.5.3
-Release:	0.9
+Version:	3.6.0
+Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	3eadaf5ad1cb942666da9a34e7b7109d
+# Source0-md5:	0b36901ae09e4686bd50acab209ca66f
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
@@ -338,7 +338,7 @@ if [ "$1" = "0" ]; then
 fi
 
 %preun pl_html
-[ ! -L %{htmllibdir}/html/pl ] || rm -f %{htmllibdir}/pl
+[ ! -L %{htmllibdir}/html/pl ] || rm -f %{htmllibdir}/html/pl
 
 %files
 %defattr(644,root,root,755)
@@ -348,7 +348,6 @@ fi
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
 
 %{imagedir}
-%{_prefix}
 %attr(755,root,root) %{_sbindir}/webgpg
 
 %dir %{_libexecdir}
@@ -368,14 +367,22 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/nodsn
 %dir %{htmllibdir}
 %dir %{htmllibdir}/html
-%dir %{htmllibdir}/html/en
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/CHARSET
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LANGUAGE_PREF
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/LOCALE
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/TIMEZONELIST
-%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en/ISPELLDICT
+%dir %{htmllibdir}/html/en-us
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/CHARSET
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/LANGUAGE
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/LANGUAGE_PREF
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/LOCALE
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/TIMEZONELIST
+%config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/en-us/ISPELLDICT
 %config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
+%{htmllibdir}/html/en-us/*.html
+%{htmllibdir}/html/en-us/*.txt
+%attr(755,root,root) %{htmllibdir}/sysconftool
+%attr(755,root,root) %{htmllibdir}/ldapsearch
+%attr(755,root,root) %{htmllibdir}/webgpg
+%attr(755,root,root) %{htmllibdir}/sendit.sh
+%{htmllibdir}/cleancache.pl
+%{htmllibdir}/authmodulelist
 
 %attr(754,root,root) /etc/rc.d/init.d/sqwebmail
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
@@ -463,11 +470,12 @@ fi
 
 %files pl_html
 %defattr(644,root,root,755)
-%{htmllibdir}/pl-pl
+%dir %{htmllibdir}/html/pl-pl
+%{htmllibdir}/html/pl-pl/*.html
+%{htmllibdir}/html/pl-pl/*.txt
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/CHARSET
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LANGUAGE_PREF
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/LOCALE
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/TIMEZONELIST
 %config(noreplace) %verify(not size mtime md5) %{htmllibdir}/html/pl-pl/ISPELLDICT
-%{htmllibdir}/html/pl-pl/*.html
