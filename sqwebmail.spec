@@ -458,7 +458,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %if %{with ldap}
 %files auth-ldap
 %defattr(644,root,root,755)
-%doc authlib/authldap.schema
+%doc authlib/authldap.schema authlib/README.ldap
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
 %{_sysconfdir}/sqwebmail/authldaprc
 %endif
@@ -466,6 +466,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %if %{with mysql}
 %files auth-mysql
 %defattr(644,root,root,755)
+%doc authlib/README.authmysql.html authlib/README.authmysql.myownquery
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
 %{_sysconfdir}/sqwebmail/authmysqlrc
 %endif
@@ -473,6 +474,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %if %{with pgsql}
 %files auth-pgsql
 %defattr(644,root,root,755)
+%doc authlib/README.authpostgres.html
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
 %{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
