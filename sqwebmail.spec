@@ -267,6 +267,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,root,root) %{_libexecdir}/sqwebmail/makemime
 %attr(755,root,root) %{_libexecdir}/sqwebmail/reformime
 %attr(755,root,root) %{_libexecdir}/sqwebmail/sqwebmaild
+%attr(2755, %{sqwebmailowner}, %{sqwebmailgroup}) %{_libexecdir}/sqwebmail/sqwebpasswd
 
 %dir %{_sysconfdir}/sqwebmail
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
