@@ -23,7 +23,7 @@ Requires:	gnupg >= 1.0.4
 BuildRequires:	expect
 BuildRequires:	gdbm-devel
 BuildRequires:	gnupg >= 1.0.4
-%{?_with_mysql:BuildPreReq:     mysql-devel}
+%{?_with_mysql:BuildReq:     mysql-devel}
 BuildRequires:	openldap-devel
 BuildRequires:	pam-devel
 BuildRequires:	perl
@@ -132,7 +132,8 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{pam.d,rc.d/init.d,sysconfig,profile.d,
            $RPM_BUILD_ROOT%{_libexecdir}/authlib \
            $RPM_BUILD_ROOT%{_sbindir} \
            $RPM_BUILD_ROOT%{_mandir}/{man1,man7,man8} \
-           $RPM_BUILD_ROOT%{httpddir}/pl-pl \
+           $RPM_BUILD_ROOT%{httpddir} \
+	   $RPM_BUILD_ROOT%{htmllibdir}/pl-pl \
            $RPM_BUILD_ROOT%{cgibindir} \
            $RPM_BUILD_ROOT%{imagedir} \
            $RPM_BUILD_ROOT%{_prefix} \
@@ -214,6 +215,7 @@ fi
 %{_mandir}/man?/*
 
 %files ldap
+%defattr(644,root,root,755)
 %{_libexecdir}/authlib/authdaemond.ldap
 %{_sysconfdir}/sqwebmail/authldaprc.dist
 
