@@ -18,7 +18,7 @@ Release:	0.9
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	d0312654c89dca924dfc958bce204b5a
+# Source0-md5:	1501fd17d61a55af5fc7328c905c09d1
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 %{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
