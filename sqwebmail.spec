@@ -1,8 +1,12 @@
+
+# auth vchkpwd waits for vpopmail to be made
+%define	_without_vchkpwd 	1
+
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	3.5.0
-Release:	0.7
+Release:	0.8
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -28,7 +32,8 @@ BuildRequires:	gnupg >= 1.0.4
 %{!?_without_mysql:BuildRequires:	mysql-devel}
 %{!?_without_ldap:BuildRequires:	openldap-devel}
 %{!?_without_pgsql:BuildRequires:	postgresql-devel}
-%{!?_without_pam:BuildRequires:	pam-devel}
+%{!?_without_pam:BuildRequires:		pam-devel}
+%{!?_without_vchkpwd:BuildRequires:	vpopmail}
 BuildRequires:	perl
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -59,121 +64,138 @@ SqWebMail is a Webmail CGI for Maildir mailboxes.
 %description -l pl
 SqWebMail jest klientem pocztowym CGI dla skrzynek Maildir.
 
-%package ldap
+%package auth-ldap
 Summary:	SqWebMail LDAP authentication driver
 Summary(pl):	Sterownik uwierzytelnienia LDAP dla SqWebMaila
 Group:		Applications/Mail
 Requires:	%{name} = %{version}
 
-%description ldap
+%description auth-ldap
 This package contains the necessary files to allow SqWebMail to
 authenticate from an LDAP directory. Install this package if you need
 the ability to use an LDAP directory for authentication.
 
-%description ldap -l pl
+%description auth-ldap -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania poprzez LDAP.
 
-%package mysql
+%package auth-mysql
 Summary:	SqWebMail MySQL authentication driver
 Summary(pl):	Sterownik uwierzytelnienia MySQL dla SqWebMaila
 Group:		Applications/Mail
+Obsoletes:      %{name}-auth-vchkpwd
 Requires:	%{name} = %{version}
 
-%description mysql
+%description auth-mysql
 This package contains the necessary files to allow SqWebMail to
 authenticate using a MySQL database table. Install this package if you
 need the ability to use a MySQL database table for authentication.
 
-%description mysql -l pl
+%description auth-mysql -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 tabeli w bazie MySQL.
 
-%package 	pgsql
+%package 	auth-pgsql
 Summary:	SqWebMail PostgreSQL authentication driver
 Summary(pl):	Sterownik uwierzytelnienia PostgreSQL dla SqWebMaila
 Group:		Applications/Mail
 Requires:	%{name} = %{version}
 
-%description pgsql
+%description auth-pgsql
 This package contains the necessary files to allow SqWebMail to
 authenticate using a PostgreSQL database table. Install this package
 if you need the ability to use a PostgreSQL database table for
 authentication.
 
-%description pgsql -l pl
+%description auth-pgsql -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 tabeli w bazie PostgreSQL.
 
-%package        userdb
+%package        auth-userdb
 Summary:        SqWebMail userdb authentication driver
 Summary(pl):    Sterownik uwierzytelnienia userdb dla SqWebMaila
 Group:          Applications/Mail
 Obsoletes:	courier-imap-userdb
 Requires:       %{name} = %{version}
 
-%description userdb
+%description auth-userdb
 This package contains the necessary files to allow SqWebMail to
 authenticate using a userdb file.
 
-%description userdb -l pl
+%description auth-userdb -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku userdb.
 
-%package        pam
+%package        auth-pam
 Summary:        SqWebMail pam authentication driver
 Summary(pl):    Sterownik uwierzytelnienia pam dla SqWebMaila
 Group:          Applications/Mail
 Requires:       %{name} = %{version}
 
-%description pam
+%description auth-pam
 This package contains the necessary files to allow SqWebMail to
 authenticate using a pam.
 
-%description pam -l pl
+%description auth-pam -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 biblioteki pam.
 
-%package        pwd
+%package        auth-pwd
 Summary:        SqWebMail pwd authentication driver
 Summary(pl):    Sterownik uwierzytelnienia pwd dla SqWebMaila
 Group:          Applications/Mail
 Requires:       %{name} = %{version}
 
-%description pwd
+%description auth-pwd
 This package contains the necessary files to allow SqWebMail to
 authenticates from the /etc/passwd file.
 
-%description pwd -l pl
+%description auth-pwd -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku /etc/passwd.
 
-%package        shadow
+%package        auth-shadow
 Summary:        SqWebMail shadow authentication driver
 Summary(pl):    Sterownik uwierzytelnienia shadow dla SqWebMaila
 Group:          Applications/Mail
 Requires:       %{name} = %{version}
 
-%description shadow
+%description auth-shadow
 This package contains the necessary files to allow SqWebMail to
 authenticates from the /etc/shadow file.
 
-%description shadow -l pl
+%description auth-shadow -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 pliku /etc/shadow.
 
-%package        cram
+%package        auth-cram
 Summary:        SqWebMail cram authentication driver
 Summary(pl):    Sterownik uwierzytelnienia cram dla SqWebMaila
 Group:          Applications/Mail
 Requires:       %{name} = %{version}
 
-%description cram
+%description auth-cram
 This package contains the necessary files to allow SqWebMail to
 authenticate using cram mechanism.
 
-%description cram -l pl
+%description auth-cram -l pl
 Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
 mechanizmu cram.
+
+%package auth-vchkpwd
+Summary:        SqWebMail vchkpwd authentication driver
+Summary(pl):    Sterownik uwierzytelnienia vchkpwd dla SqWebMaila
+Group:          Applications/Mail
+Obsoletes:      %{name}-auth-mysql
+Requires:       %{name} = %{version}
+
+%description auth-vchkpwd
+This package contains the necessary files to allow SqWebMail to
+authenticate using a vchkpwd.
+
+%description auth-vchkpwd -l pl
+Ten pakiet zawiera pliki niezbêdne do uwierzytelniania przy u¿yciu
+vchkpwd
+
 
 %package        calendar
 Summary:        SqWebMail calendar
@@ -207,6 +229,8 @@ Polskie t³umaczenie interfejsu
 %patch2 -p1
 
 %build
+
+
 %configure --sysconfdir=%{_sysconfdir}/sqwebmail \
 	   --libexecdir=%{_libexecdir} \
 	   --enable-cgibindir=%{cgibindir} \
@@ -294,6 +318,9 @@ install authlib/authshadow $RPM_BUILD_ROOT%{_libexecdir}/authlib/authshadow
 install authlib/authcram $RPM_BUILD_ROOT%{_libexecdir}/authlib/authcram
 %endif
 
+%if 0%{!?_without_vchkpwd:1}
+install authlib/authvchkpwd $RPM_BUILD_ROOT%{_libexecdir}/authlib/authvchkpwd
+%endif
 
 install authlib/authdaemond.plain $RPM_BUILD_ROOT%{_libexecdir}/authlib/authdaemond.plain
 install pcpd $RPM_BUILD_ROOT%{_sbindir}
@@ -388,7 +415,7 @@ fi
 %{_mandir}/man8/deliverquota.*
 
 %if 0%{!?_without_ldap:1}
-%files ldap
+%files auth-ldap
 %defattr(644,root,root,755)
 %doc authlib/authldap.schema
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.ldap
@@ -397,7 +424,7 @@ fi
 %endif
 
 %if 0%{!?_without_mysql:1}
-%files mysql
+%files auth-mysql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.mysql
 %{_sysconfdir}/sqwebmail/authmysqlrc
@@ -405,14 +432,14 @@ fi
 %endif
 
 %if 0%{!?_without_pgsql:1}
-%files pgsql
+%files auth-pgsql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemond.pgsql
 %{_sysconfdir}/sqwebmail/authpgsqlrc
 %endif
 
 %if 0%{!?_without_userdb:1}
-%files userdb
+%files auth-userdb
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libexecdir}/authlib/authuserdb
 %attr(755,root,root) %{_sbindir}/makeuserdb
@@ -429,21 +456,21 @@ fi
 %endif
 
 %if 0%{!?_without_pam:1}
-%files pam
+%files auth-pam
 %defattr(644,root,root,755) 
 %attr(755,root,root) %{_libexecdir}/authlib/authpam
 %{_mandir}/man7/authpam.*
 %endif
 
 %if 0%{!?_without_pwd:1}
-%files pwd
+%files auth-pwd
 %defattr(644,root,root,755) 
 %attr(755,root,root) %{_libexecdir}/authlib/authdaemon.passwd
 %{_mandir}/man7/authpwd.*
 %endif
 
 %if 0%{!?_without_shadow:1}
-%files shadow
+%files auth-shadow
 %defattr(644,root,root,755) 
 %attr(755,root,root) %{_libexecdir}/authlib/authshadow
 %{_mandir}/man7/authshadow.*
@@ -451,10 +478,17 @@ fi
 
 
 %if 0%{!?_without_cram:1}
-%files cram
+%files auth-cram
 %defattr(644,root,root,755) 
 %attr(755,root,root) %{_libexecdir}/authlib/authcram
 %{_mandir}/man7/authcram.*
+%endif
+
+%if 0%{!?_without_vchkpwd:1}
+%files auth-vchkpwd
+%defattr(644,root,root,755) 
+%attr(755,root,root) %{_libexecdir}/authlib/authvchkpwd
+#%{_mandir}/man7/authvchkpwd.*
 %endif
 
 
