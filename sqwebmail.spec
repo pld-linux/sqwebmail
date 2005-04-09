@@ -162,6 +162,7 @@ rm -f $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
 
 # pam
 cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/webmail
+cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/calendar
 
 # for apache
 echo "Alias /webmail %{imagedir}" >apache-%{name}.conf
@@ -286,7 +287,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/LOCALE
 %config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/TIMEZONELIST
 %config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/ISPELLDICT
-%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/*
+%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/webmail
 %{_datadir}/sqwebmail/html/en-us/*.html
 %{_datadir}/sqwebmail/html/en-us/*.txt
 %attr(755,root,root) %{_datadir}/sqwebmail/ldapsearch
@@ -304,6 +305,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %defattr(644,root,root,755)
 %doc pcp_README.html
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/calendarmode
+%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/calendar
 %attr(755,root,root) %{_libexecdir}/sqwebmail/pcpd
 %attr(751,bin,bin) %dir %{_localstatedir}/calendar
 %attr(700,bin,bin) %dir %{_localstatedir}/calendar/localcache
