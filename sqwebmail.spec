@@ -1,7 +1,4 @@
 #
-# TODO
-#	- tests
-#
 # Conditional build:
 %bcond_without	ispell
 %bcond_without	ssl
@@ -12,7 +9,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	5.0.1
-Release:	0.5
+Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
