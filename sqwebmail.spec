@@ -116,8 +116,8 @@ rm -f missing
 	--localstatedir=%{_localstatedir} \
 	--enable-cgibindir=%{cgibindir} \
 	%{?with_ssl:--enable-https} \
-	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
-	--enable-mimetypes=/etc/mime.types \
+	%{?with_ispell:--with-ispell=%{_bindir}/ispell} \
+	--enable-mimetypes=%{_sysconfdir}/mime.types \
 	--enable-imagedir=%{imagedir} \
 	--enable-imageurl=%{imageurl} \
 	--with-cachedir=%{_localstatedir}/tmp \
@@ -235,7 +235,7 @@ else
 		echo
 	fi
 fi
-	
+
 %preun calendar
 if [ "$1" = "0" ]; then
 	if [ -f /var/run/sqwebmaild.pid.pcp ]; then
@@ -273,20 +273,20 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %dir %{_sysconfdir}/sqwebmail
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared.tmp
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/ldapaddressbook
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/sqwebmaild
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/apache-%{name}.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/ldapaddressbook
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/sqwebmaild
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/apache-%{name}.conf
 %dir %{_datadir}/sqwebmail
 %dir %{_datadir}/sqwebmail/html
 %dir %{_datadir}/sqwebmail/html/en-us
 %{imagedir}
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/CHARSET
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LANGUAGE_PREF
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/LOCALE
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/TIMEZONELIST
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/en-us/ISPELLDICT
-%config(noreplace) %verify(not size mtime md5) /etc/pam.d/*
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/CHARSET
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/LANGUAGE
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/LANGUAGE_PREF
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/LOCALE
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/TIMEZONELIST
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/ISPELLDICT
+%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/*
 %{_datadir}/sqwebmail/html/en-us/*.html
 %{_datadir}/sqwebmail/html/en-us/*.txt
 %attr(755,root,root) %{_datadir}/sqwebmail/ldapsearch
@@ -303,7 +303,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %files calendar
 %defattr(644,root,root,755)
 %doc pcp_README.html
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/sqwebmail/calendarmode
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/calendarmode
 %attr(755,root,root) %{_libexecdir}/sqwebmail/pcpd
 %attr(751,bin,bin) %dir %{_localstatedir}/calendar
 %attr(700,bin,bin) %dir %{_localstatedir}/calendar/localcache
@@ -316,10 +316,10 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %dir %{_datadir}/sqwebmail/html/pl-pl
 %{_datadir}/sqwebmail/html/pl-pl/*.html
 %{_datadir}/sqwebmail/html/pl-pl/*.txt
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/CHARSET
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/LANGUAGE
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/LANGUAGE_PREF
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/LOCALE
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/TIMEZONELIST
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/sqwebmail/html/pl-pl/ISPELLDICT
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/pl-pl/CHARSET
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/pl-pl/LANGUAGE
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/pl-pl/LANGUAGE_PREF
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/pl-pl/LOCALE
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/pl-pl/TIMEZONELIST
+%config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/pl-pl/ISPELLDICT
 %endif
