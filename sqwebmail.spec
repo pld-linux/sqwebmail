@@ -122,7 +122,8 @@ rm -f missing
 	--enable-imageurl=%{imageurl} \
 	--with-cachedir=%{_localstatedir}/tmp \
 	--with-cacheowner=%{cacheowner} \
-	--with-mailer=%{_sbindir}/sendmail
+	--with-mailer=%{_sbindir}/sendmail \
+	--with-piddir=/var/run
 %{__make}
 
 %install
