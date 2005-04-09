@@ -36,8 +36,6 @@ case "$1" in
 	# Check if the service is already running?
 	if [ ! -f /var/lock/subsys/sqwebmail ]; then
 
-		$DIR/authlib/authdaemond $1
-
 	        case "`cat /etc/sqwebmail/calendarmode 2>/dev/null`" in
 	        net)
 		msg_starting pcpd
@@ -71,7 +69,6 @@ case "$1" in
 		    rm -f $PIDFILE.pcp
 		fi
 
-		$DIR/authlib/authdaemond $1
 		rm -f /var/lock/subsys/sqwebmail
 	else
 		msg_not_running sqwebmail
