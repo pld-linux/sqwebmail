@@ -32,8 +32,8 @@ BuildRequires:	gnupg >= 1.0.4
 # perhaps only because of test sources written in C, but with ".C" extension(?)
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
-BuildRequires:	perl-base
 BuildRequires:	procps
+BuildRequires:	rpm-perlprov
 BuildRequires:	sysconftool
 PreReq:		rc-scripts
 Requires(post,preun):	/sbin/chkconfig
