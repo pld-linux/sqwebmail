@@ -8,12 +8,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	5.0.2
+Version:	5.0.4
 Release:	1
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	cf0bb6de61630eb62660975fcf22dcec
+# Source0-md5:	fee97b3546b954f0307e2d8963be7498
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 %{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
@@ -21,6 +21,7 @@ Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-prowizorka.patch
 Patch2:		%{name}-maildir.patch
 Patch3:		%{name}-init.patch
+Patch4:		%{name}-sec_fix.patch
 URL:		http://www.courier-mta.org/sqwebmail/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -98,13 +99,26 @@ install %{SOURCE2} sqwebmail.init.in
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
-rm -f missing
-%{__libtoolize}
-%{__aclocal}
-%{__autoconf}
-%{__automake}
+# Change Makefile.am files and force recreate Makefile.in's.
+OLDDIR=`pwd`
+find -type f -a \( -name configure.in -o -name configure.ac \) | while read FILE; do
+        cd "`dirname "$FILE"`"
+
+        if [ -f Makefile.am ]; then
+                sed -i -e '/_LDFLAGS=-static/d' Makefile.am
+        fi
+
+        %{__libtoolize}
+        %{__aclocal}
+        %{__autoconf}
+        %{__autoheader}
+        %{__automake}
+
+        cd "$OLDDIR"
+done
 
 %configure \
 	--with-db=db \
@@ -251,7 +265,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS sqwebmail/BUGS INSTALL INSTALL.vchkpw NEWS README sqwebmail/SECURITY sqwebmail/TODO gpglib/README.html
+%doc AUTHORS sqwebmail/BUGS INSTALL NEWS README sqwebmail/SECURITY sqwebmail/TODO gpglib/README.html
 %doc sqwebmail/BUGS.html INSTALL.html README.html sqwebmail/SECURITY.html sqwebmail/TODO.html sqwebmail/ChangeLog
 %doc maildir/README*.html gpglib/README.html
 %attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
