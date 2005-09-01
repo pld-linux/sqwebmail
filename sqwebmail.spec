@@ -25,7 +25,7 @@ Patch4:		%{name}-sec_fix.patch
 URL:		http://www.courier-mta.org/sqwebmail/
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	courier-authlib-devel
+BuildRequires:	courier-authlib-devel >= 0.57
 BuildRequires:	db-devel
 BuildRequires:	expect
 BuildRequires:	fam-devel
