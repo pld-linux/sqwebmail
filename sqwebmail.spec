@@ -41,10 +41,10 @@ Requires(post,preun):	/sbin/chkconfig
 Requires:	crondaemon
 Requires:	expect
 Requires:	gnupg >= 1.0.4
-Requires:	apache
+Requires:	webserver = apache
 Requires:	mailcap
 %{?with_ispell:Requires:	ispell}
-%{?with_ssl:Requires:	apache-mod_ssl}
+%{?with_ssl:Requires:	apache(mod_ssl)}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define	_libexecdir		/usr/%{_lib}
