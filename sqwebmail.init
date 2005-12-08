@@ -62,7 +62,7 @@ case "$1" in
 		msg_stopping sqwebmail
 		killproc sqwebmaild
 		rm -f $PIDFILE
-		
+
 		if [ -f $PIDFILE.pcp ]; then
 		    msg_stopping pcpd
 		    killproc pcpd
