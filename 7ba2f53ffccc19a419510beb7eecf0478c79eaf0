@@ -1,0 +1,10 @@
+- typos and other pl fixes
+- s/BuildPreReq/BuildRequires/, removed BRs required by rpm-build
+- s/vixie-cron/crondaemon/ in Requires
+- changed _libexecdir to FHS-compliant location (there is no /usr/libexec)
+- moved %configure to %build, removed passing options that are already
+  in %configure macro
+- use install instead install-strip to allow building debug version
+- stop daemon only on uninstall, not upgrade;
+  remove symlink in %preun not %postun to avoid leaving dirs on uninstall
+- added some missing dirs to package
