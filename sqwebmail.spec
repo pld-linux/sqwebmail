@@ -16,7 +16,7 @@ Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
 # Source0-md5:	fee97b3546b954f0307e2d8963be7498
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
-%{?with_pl:Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz}
+Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-prowizorka.patch
 Patch2:		%{name}-maildir.patch
