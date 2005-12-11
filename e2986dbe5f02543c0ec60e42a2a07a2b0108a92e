@@ -1,0 +1,3 @@
+- removed duplicated files
+- don't use %{_sysconfdir} macro where it shouldn't be used
+- changed _with_mysql and _with_ssl to _without, let bconds work
