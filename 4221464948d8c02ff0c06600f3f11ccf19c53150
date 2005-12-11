@@ -1,0 +1,10 @@
+- updated to 5.0.0, TODO
+- removed packages: auth-{ldap,mysql,pgsql,userdb,pam,pwd,shadow,cram}
+                which are included in courier-authlib
+- removed -mysqlauth.patch - outdated
+- added -build.patch - configure fix
+- BR: courier-authlib-devel
+- cleanups libexecdir,datadir names, removed httpddir
+- a lot of %files fixes
+- moved webmail images to %{_datadir}/sqwebmail/html/webmail
+- added post, preun for apache alias
