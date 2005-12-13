@@ -9,7 +9,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	5.0.4
-Release:	1
+Release:	1.2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -17,6 +17,7 @@ Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
+Source4:	%{name}-apache.conf
 Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-prowizorka.patch
 Patch2:		%{name}-maildir.patch
@@ -35,27 +36,29 @@ BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	procps
 BuildRequires:	rpm-perlprov
+BuildRequires:	rpmbuild(macros) >= 1.264
 BuildRequires:	sysconftool
-PreReq:		rc-scripts
 Requires(post,preun):	/sbin/chkconfig
+%{?with_ssl:Requires:	apache(mod_ssl)}
 Requires:	crondaemon
 Requires:	expect
 Requires:	gnupg >= 1.0.4
-Requires:	webserver = apache
-Requires:	mailcap
 %{?with_ispell:Requires:	ispell}
-%{?with_ssl:Requires:	apache(mod_ssl)}
+Requires:	mailcap
+Requires:	rc-scripts
+Requires:	webserver = apache
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define	_libexecdir		/usr/%{_lib}
 %define	_localstatedir		/var/spool/sqwebmail
+%define	_webapps	/etc/webapps
+%define	_webapp		%{name}
+%define	_sysconfdir	%{_webapps}/%{_webapp}
 
 %define	httpddir		/home/services/httpd
 %define	cgibindir		%{httpddir}/cgi-bin
 %define	imagedir		%{_datadir}/sqwebmail/images
 %define	imageurl		/webmail
-%define	_apache1dir		/etc/apache
-%define	_apache2dir		/etc/httpd
 
 %define	cacheowner		bin
 %define	sqwebmailowner		root
@@ -108,7 +111,7 @@ find -type f -a \( -name configure.in -o -name configure.ac \) | while read FILE
         cd "`dirname "$FILE"`"
 
         if [ -f Makefile.am ]; then
-                sed -i -e '/_LDFLAGS=-static/d' Makefile.am
+                sed -i -e '/_[L]DFLAGS=-static/d' Makefile.am
         fi
 
         %{__libtoolize}
@@ -122,25 +125,22 @@ done
 
 %configure \
 	--with-db=db \
-	--sysconfdir=%{_sysconfdir}/sqwebmail \
-	--libexecdir=%{_libexecdir} \
-	--localstatedir=%{_localstatedir} \
 	--enable-cgibindir=%{cgibindir} \
 	%{?with_ssl:--enable-https} \
-	%{?with_ispell:--with-ispell=%{_bindir}/ispell} \
-	--enable-mimetypes=%{_sysconfdir}/mime.types \
+	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
+	--enable-mimetypes=/etc/mime.types \
 	--enable-imagedir=%{imagedir} \
 	--enable-imageurl=%{imageurl} \
 	--with-cachedir=%{_localstatedir}/tmp \
 	--with-cacheowner=%{cacheowner} \
-	--with-mailer=%{_sbindir}/sendmail \
+	--with-mailer=/usr/sbin/sendmail \
 	--with-piddir=/var/run
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/{sqwebmail/{shared,shared.tmp},pam.d} \
-	$RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,cron.hourly,rc.d/init.d,httpd} \
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/{shared,shared.tmp} \
+	$RPM_BUILD_ROOT/etc/{sysconfig,cron.hourly,rc.d/init.d,pam.d} \
 %{?with_pl:$RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/pl-pl}
 
 %{__make} install \
@@ -157,47 +157,32 @@ install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{_d
 
 rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
 cp pcp/README.html pcp_README.html
-echo net >$RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/calendarmode
+echo net >$RPM_BUILD_ROOT%{_sysconfdir}/calendarmode
 
 %if %{with ispell}
 touch $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/en/ISPELLDICT
 %endif
 
 # make config file
-./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/*.dist
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/*.dist
+./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/*.dist
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/*.dist
 
 # delete man pages in conflict with courier-imap
 rm -f $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota*
 rm -f $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
 
 # pam
-cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/webmail
-cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/calendar
+cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/webmail
+cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/calendar
 
 # for apache
-echo "Alias /webmail %{imagedir}" >apache-%{name}.conf
-install apache-%{name}.conf $RPM_BUILD_ROOT%{_sysconfdir}/sqwebmail/apache-%{name}.conf
+install %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+install %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
-# apache1
-if [ -d %{_apache1dir}/conf.d ]; then
-	ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache1dir}/conf.d/99_%{name}.conf
-	if [ -f /var/lock/subsys/apache ]; then
-		/etc/rc.d/init.d/apache restart 1>&2
-	fi
-fi
-# apache2
-if [ -d %{_apache2dir}/httpd.conf ]; then
-	ln -sf %{_sysconfdir}/sqwebmail/apache-%{name}.conf %{_apache2dir}/httpd.conf/99_%{name}.conf
-	if [ -f /var/lock/subsys/httpd ]; then
-		/etc/rc.d/init.d/httpd restart 1>&2
-	fi
-fi
-
 [ -L %{_datadir}/sqwebmail/html/en ] || ln -fs en-us %{_datadir}/sqwebmail/html/en
 /sbin/chkconfig --add sqwebmail
 if [ -f /var/lock/subsys/sqwebmail ]; then
@@ -208,21 +193,6 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
-	# apache1
-	if [ -d %{_apache1dir}/conf.d ]; then
-		rm -f %{_apache1dir}/conf.d/99_%{name}.conf
-		if [ -f /var/lock/subsys/apache ]; then
-			/etc/rc.d/init.d/apache restart 1>&2
-		fi
-	fi
-	# apache2
-	if [ -d %{_apache2dir}/httpd.conf ]; then
-		rm -f %{_apache2dir}/httpd.conf/99_%{name}.conf
-		if [ -f /var/lock/subsys/httpd ]; then
-			/etc/rc.d/init.d/httpd restart 1>&2
-		fi
-	fi
-
 	/sbin/chkconfig --del sqwebmail
 	if [ -f /var/lock/subsys/sqwebmail ]; then
 		/etc/rc.d/init.d/sqwebmail stop 1>&2
@@ -239,11 +209,11 @@ if [ -f /var/run/sqwebmaild.pid.pcp ]; then
 else
 	if [ -f /var/lock/subsys/sqwebmail ]; then
 		echo
-		echo Type "/etc/rc.d/init.d/sqwebmail restart" to start sqwebmail with calendar
+		echo 'Type "/etc/rc.d/init.d/sqwebmail restart" to start sqwebmail with calendar'
 		echo
 	else
 		echo
-		echo Type "/etc/rc.d/init.d/sqwebmail start" to start sqwebmail with calendar
+		echo 'Type "/etc/rc.d/init.d/sqwebmail start" to start sqwebmail with calendar'
 		echo
 	fi
 fi
@@ -262,6 +232,62 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 
 %preun pl_html
 [ ! -L %{_datadir}/sqwebmail/html/pl ] || rm -f %{_datadir}/sqwebmail/html/pl
+
+%triggerin -- apache1
+%webapp_register apache %{_webapp}
+
+%triggerun -- apache1
+%webapp_unregister apache %{_webapp}
+
+%triggerin -- apache >= 2.0.0
+%webapp_register httpd %{_webapp}
+
+%triggerun -- apache >= 2.0.0
+%webapp_unregister httpd %{_webapp}
+
+%triggerpostun -- %{name} < 5.0.4-1.1
+# rescue app configs
+for i in ldapaddressbook sqwebmaild; do
+	if [ -f /etc/%{name}/$i.rpmsave ]; then
+		mv -f %{_sysconfdir}/$i{,.rpmnew}
+		mv -f /etc/%{name}/$i.rpmsave %{_sysconfdir}/$i
+	fi
+done
+
+if [ -f /etc/%{name}/apache-%{name}.conf.rpmsave ]; then
+	if [ -d /etc/apache/webapps.d ]; then
+		cp -f %{_sysconfdir}/apache.conf{,.rpmnew}
+		cp -f /etc/%{name}/apache-%{name}.conf.rpmsave %{_sysconfdir}/apache.conf
+	fi
+
+	if [ -d /etc/httpd/webapps.d ]; then
+		cp -f %{_sysconfdir}/httpd.conf{,.rpmnew}
+		cp -f /etc/%{name}/apache-%{name}.conf.rpmsave %{_sysconfdir}/httpd.conf
+	fi
+	rm -f /etc/%{name}/apache-%{name}.conf.rpmsave
+fi
+
+if [ -L /etc/apache/conf.d/99_%{name}.conf ]; then
+	rm -f /etc/apache/conf.d/99_%{name}.conf
+	apache_reload=1
+fi
+if [ -L /etc/httpd/httpd.conf/99_%{name}.conf ]; then
+	rm -f /etc/httpd/httpd.conf/99_%{name}.conf
+	httpd_reload=1
+fi
+
+if [ "$httpd_reload" ]; then
+	/usr/sbin/webapp register httpd %{_webapp}
+	if [ -f /var/lock/subsys/httpd ]; then
+		/etc/rc.d/init.d/httpd reload 1>&2
+	fi
+fi
+if [ "$apache_reload" ]; then
+	/usr/sbin/webapp register apache %{_webapp}
+	if [ -f /var/lock/subsys/apache ]; then
+		/etc/rc.d/init.d/apache reload 1>&2
+	fi
+fi
 
 %files
 %defattr(644,root,root,755)
@@ -282,12 +308,14 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %attr(755,root,root) %{_libexecdir}/sqwebmail/sqwebmaild
 %attr(2755, %{sqwebmailowner}, %{sqwebmailgroup}) %{_libexecdir}/sqwebmail/sqwebpasswd
 
-%dir %{_sysconfdir}/sqwebmail
-%attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared
-%attr(755,daemon,daemon) %dir %{_sysconfdir}/sqwebmail/shared.tmp
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/ldapaddressbook
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/sqwebmaild
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/apache-%{name}.conf
+%dir %{_sysconfdir}
+%attr(755,daemon,daemon) %dir %{_sysconfdir}/shared
+%attr(755,daemon,daemon) %dir %{_sysconfdir}/shared.tmp
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ldapaddressbook
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmaild
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
+
 %dir %{_datadir}/sqwebmail
 %dir %{_datadir}/sqwebmail/html
 %dir %{_datadir}/sqwebmail/html/en-us
@@ -315,7 +343,7 @@ echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
 %files calendar
 %defattr(644,root,root,755)
 %doc pcp_README.html
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/sqwebmail/calendarmode
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/calendarmode
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/calendar
 %attr(755,root,root) %{_libexecdir}/sqwebmail/pcpd
 %attr(751,bin,bin) %dir %{_localstatedir}/calendar
