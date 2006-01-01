@@ -9,7 +9,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	5.0.4
-Release:	1.2
+Release:	1.6
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -39,6 +39,7 @@ BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.264
 BuildRequires:	sysconftool
 Requires(post,preun):	/sbin/chkconfig
+Requires:	FHS >= 2.3-12
 %{?with_ssl:Requires:	apache(mod_ssl)}
 Requires:	crondaemon
 Requires:	expect
@@ -47,6 +48,8 @@ Requires:	gnupg >= 1.0.4
 Requires:	mailcap
 Requires:	rc-scripts
 Requires:	webserver = apache
+Conflicts:	apache-base < 2.2.0-8
+Conflicts:	apache1 < 1.3.34-5.11
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define	_libexecdir		/usr/%{_lib}
@@ -55,8 +58,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define	_webapp		%{name}
 %define	_sysconfdir	%{_webapps}/%{_webapp}
 
-%define	httpddir		/home/services/httpd
-%define	cgibindir		%{httpddir}/cgi-bin
+%define	cgibindir		%{_prefix}/lib/cgi-bin
 %define	imagedir		%{_datadir}/sqwebmail/images
 %define	imageurl		/webmail
 
@@ -170,6 +172,8 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/*.dist
 # delete man pages in conflict with courier-imap
 rm -f $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota*
 rm -f $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
+# these conflict with courier-imap
+rm -f $RPM_BUILD_ROOT%{_sbindir}/sharedindex{install,split}
 
 # pam
 cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/webmail
@@ -228,7 +232,7 @@ fi
 
 %post pl_html
 [ -L %{_datadir}/sqwebmail/html/pl ] || ln -fs pl-pl %{_datadir}/sqwebmail/html/pl
-echo "echo 'pl-pl' > /usr/share/sqwebmail/html/en/LANGUAGE"
+echo "echo 'pl-pl' > %{_datadir}/sqwebmail/html/en/LANGUAGE"
 
 %preun pl_html
 [ ! -L %{_datadir}/sqwebmail/html/pl ] || rm -f %{_datadir}/sqwebmail/html/pl
@@ -294,11 +298,9 @@ fi
 %doc AUTHORS sqwebmail/BUGS INSTALL NEWS README sqwebmail/SECURITY sqwebmail/TODO gpglib/README.html
 %doc sqwebmail/BUGS.html INSTALL.html README.html sqwebmail/SECURITY.html sqwebmail/TODO.html sqwebmail/ChangeLog
 %doc maildir/README*.html gpglib/README.html
-%attr(%{sqwebmailperm}, %{sqwebmailowner}, %{sqwebmailgroup}) %{cgibindir}/sqwebmail
+%attr(755,root,root) %{cgibindir}/sqwebmail
 
 %attr(755,root,root) %{_sbindir}/webgpg
-%attr(755,root,root) %{_sbindir}/sharedindexinstall
-%attr(755,root,root) %{_sbindir}/sharedindexsplit
 
 %dir %{_libexecdir}/sqwebmail
 %attr(755,root,root) %{_libexecdir}/sqwebmail/deliverquota
