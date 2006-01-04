@@ -9,7 +9,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	5.0.4
-Release:	1.6
+Release:	2
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -36,7 +36,7 @@ BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	procps
 BuildRequires:	rpm-perlprov
-BuildRequires:	rpmbuild(macros) >= 1.264
+BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sysconftool
 Requires(post,preun):	/sbin/chkconfig
 Requires:	FHS >= 2.3-12
@@ -189,11 +189,7 @@ rm -rf $RPM_BUILD_ROOT
 %post
 [ -L %{_datadir}/sqwebmail/html/en ] || ln -fs en-us %{_datadir}/sqwebmail/html/en
 /sbin/chkconfig --add sqwebmail
-if [ -f /var/lock/subsys/sqwebmail ]; then
-	/etc/rc.d/init.d/sqwebmail restart 1>&2
-else
-	echo "Run \"/etc/rc.d/init.d/sqwebmail start\" to start sqwebmail daemon."
-fi
+%service sqwebmail restart
 
 %preun
 if [ "$1" = "0" ]; then
@@ -282,15 +278,11 @@ fi
 
 if [ "$httpd_reload" ]; then
 	/usr/sbin/webapp register httpd %{_webapp}
-	if [ -f /var/lock/subsys/httpd ]; then
-		/etc/rc.d/init.d/httpd reload 1>&2
-	fi
+	%service httpd reload
 fi
 if [ "$apache_reload" ]; then
 	/usr/sbin/webapp register apache %{_webapp}
-	if [ -f /var/lock/subsys/apache ]; then
-		/etc/rc.d/init.d/apache reload 1>&2
-	fi
+	%service apache reload
 fi
 
 %files
