@@ -194,9 +194,7 @@ rm -rf $RPM_BUILD_ROOT
 %preun
 if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del sqwebmail
-	if [ -f /var/lock/subsys/sqwebmail ]; then
-		/etc/rc.d/init.d/sqwebmail stop 1>&2
-	fi
+	%service sqwebmail stop
 	[ ! -L %{_datadir}/sqwebmail/html/en ] || rm -f %{_datadir}/sqwebmail/html/en
 fi
 
@@ -207,13 +205,14 @@ if [ -f /var/run/sqwebmaild.pid.pcp ]; then
 	%{_sbindir}/courierlogger -pid=/var/run/sqwebmaild.pid.pcp -start \
 		%{_libexecdir}/sqwebmail/pcpd server
 else
+	# FIXME: why not just restart it? %%service -q sqwebmail restart
 	if [ -f /var/lock/subsys/sqwebmail ]; then
 		echo
-		echo 'Type "/etc/rc.d/init.d/sqwebmail restart" to start sqwebmail with calendar'
+		echo 'Type "/sbin/service sqwebmail restart" to start sqwebmail with calendar'
 		echo
 	else
 		echo
-		echo 'Type "/etc/rc.d/init.d/sqwebmail start" to start sqwebmail with calendar'
+		echo 'Type "/sbin/service sqwebmail start" to start sqwebmail with calendar'
 		echo
 	fi
 fi
