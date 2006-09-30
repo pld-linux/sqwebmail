@@ -47,6 +47,7 @@ Requires:	gnupg >= 1.0.4
 %{?with_ispell:Requires:	ispell}
 Requires:	mailcap
 Requires:	rc-scripts
+Requires:	webapps
 Requires:	webserver = apache
 Conflicts:	apache-base < 2.2.0-8
 Conflicts:	apache1 < 1.3.34-5.11
