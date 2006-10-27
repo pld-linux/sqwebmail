@@ -9,7 +9,7 @@ Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	5.0.4
-Release:	4
+Release:	5
 License:	GPL
 Group:		Applications/Mail
 Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
@@ -39,10 +39,10 @@ BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sysconftool
 Requires(post,preun):	/sbin/chkconfig
-Requires:	FHS >= 2.3-12
 %{?with_ssl:Requires:	apache(mod_ssl)}
 Requires:	crondaemon
 Requires:	expect
+Requires:	filesystem >= 3.0-11
 Requires:	gnupg >= 1.0.4
 %{?with_ispell:Requires:	ispell}
 Requires:	mailcap
