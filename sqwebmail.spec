@@ -42,7 +42,7 @@ Requires(post,preun):	/sbin/chkconfig
 %{?with_ssl:Requires:	apache(mod_ssl)}
 Requires:	crondaemon
 Requires:	expect
-Requires:	filesystem >= 3.0-11
+Requires:	filesystem >= 2.0-1
 Requires:	gnupg >= 1.0.4
 %{?with_ispell:Requires:	ispell}
 Requires:	mailcap
