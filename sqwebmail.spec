@@ -6,7 +6,7 @@
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	SqWebMail - Maildir Webmail CGI client
-Summary(pl):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
+Summary(pl.UTF-8):   SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
 Version:	5.0.4
 Release:	5
@@ -71,32 +71,32 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 SqWebMail is a Webmail CGI for Maildir mailboxes.
 
-%description -l pl
+%description -l pl.UTF-8
 SqWebMail jest klientem pocztowym CGI dla skrzynek Maildir.
 
 %package calendar
 Summary:	SqWebMail calendar
-Summary(pl):	Kalendarz dla SqWebMaila
+Summary(pl.UTF-8):   Kalendarz dla SqWebMaila
 Group:		Applications/Mail
 Requires:	%{name} = %{version}-%{release}
 
 %description calendar
 SqWebMail Calendar.
 
-%description calendar -l pl
+%description calendar -l pl.UTF-8
 Kalendarz SqWebMaila.
 
 %package pl_html
 Summary:	SqWebMail - Polish translation
-Summary(pl):	Sqwebmail - polska wersja interfejsu
+Summary(pl.UTF-8):   Sqwebmail - polska wersja interfejsu
 Group:		Applications/Mail
 Requires:	%{name} = %{version}-%{release}
 
 %description pl_html
 Polish translation.
 
-%description pl_html -l pl
-Polskie t≥umaczenie interfejsu.
+%description pl_html -l pl.UTF-8
+Polskie t≈Çumaczenie interfejsu.
 
 %prep
 %setup -q
