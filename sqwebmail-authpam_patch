@@ -1,5 +1,5 @@
---- sqwebmail-3.5.0/sqwebmail/sqwebmail.pamconf.orig	Tue Feb 18 00:09:37 2003
-+++ sqwebmail-3.5.0/sqwebmail/sqwebmail.pamconf		Tue Feb 18 00:09:52 2003
+--- sqwebmail-5.9.2/libs/sqwebmail/sqwebmail.pamconf.orig	Tue Feb 18 00:09:37 2003
++++ sqwebmail-5.9.2/libs/sqwebmail/sqwebmail.pamconf		Tue Feb 18 00:09:52 2003
 @@ -21,5 +21,5 @@
  # It is your responsibility to figure out how PAM works, it's not yet
  # standardized enough for me to do it for you.

@@ -1,17 +1,8 @@
-diff -Nur old/configure.in new/configure.in
---- old/configure.in	2005-07-23 14:00:00.000000000 +0000
-+++ new/configure.in	2005-08-31 22:01:48.324533704 +0000
-@@ -295,6 +295,7 @@
- test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
- eval "prefix=$prefix"
- eval "libexecdir=$libexecdir"
-+eval "DIR=$libexecdir"
- eval "localstatedir=$localstatedir"
- 
- # For rfc2045
-@@ -320,4 +321,4 @@
- 	rfc822 rfc2045 maildir soxwrap \
- 	http11 cgi ldapaddressbook \
- 	gpglib pcp sqwebmail)
+--- sqwebmail-5.9.2/configure.ac.orig	2018-03-24 21:48:34.296563716 +0100
++++ sqwebmail-5.9.2/configure.ac	2018-03-24 21:49:01.836563402 +0100
+@@ -304,4 +304,4 @@
+ 	libs/rfc822 libs/rfc2045 libs/maildir libs/soxwrap
+ 	libs/http11 libs/cgi libs/ldapaddressbook
+ 	libs/gpglib libs/pcp libs/sqwebmail)
 -AC_OUTPUT(Makefile dbobj.h dbobj.config sqwebmail.spec sqwebmail.lpspec sqwebmaild.rc)
 +AC_OUTPUT(Makefile dbobj.h dbobj.config sqwebmail.spec sqwebmail.lpspec sqwebmaild.rc sqwebmail.init)

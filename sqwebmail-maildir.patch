@@ -1,6 +1,5 @@
-diff -Nur old/pcp/pcpd.c new/pcp/pcpd.c
---- old/pcp/pcpd.c	2004-05-02 15:57:31.000000000 +0000
-+++ new/pcp/pcpd.c	2004-06-01 22:27:02.000000000 +0000
+--- old/libs/pcp/pcpd.c	2004-05-02 15:57:31.000000000 +0000
++++ new/libs/pcp/pcpd.c	2004-06-01 22:27:02.000000000 +0000
 @@ -2187,10 +2187,10 @@
  		exit(1);
  	}
@@ -14,9 +13,8 @@ diff -Nur old/pcp/pcpd.c new/pcp/pcpd.c
  			strerror(errno));
  		maildir_cache_cancel();
  		exit(1);
-diff -Nur old/sqwebmail/auth.c new/sqwebmail/auth.c
---- old/sqwebmail/auth.c	2004-11-21 03:38:35.000000000 +0000
-+++ new/sqwebmail/auth.c	2004-12-20 21:46:53.000000000 +0000
+--- old/libs/sqwebmail/auth.c	2004-11-21 03:38:35.000000000 +0000
++++ new/libs/sqwebmail/auth.c	2004-12-20 21:46:53.000000000 +0000
 @@ -79,7 +79,7 @@
  	if (!maildir || !*maildir)
  		maildir=getenv("MAILDIRPATH");
@@ -26,9 +24,8 @@ diff -Nur old/sqwebmail/auth.c new/sqwebmail/auth.c
  	if (chdir(maildir))	return (-1);
  	maildir_loginexec();
  	return (0);
-diff -Nur old/sqwebmail/sqwebmaild.dist.in new/sqwebmail/sqwebmaild.dist.in
---- old/sqwebmail/sqwebmaild.dist.in	2004-05-09 03:32:01.000000000 +0000
-+++ new/sqwebmail/sqwebmaild.dist.in	2004-06-01 22:22:10.000000000 +0000
+--- old/libs/sqwebmail/sqwebmaild.dist.in	2004-05-09 03:32:01.000000000 +0000
++++ new/libs/sqwebmail/sqwebmaild.dist.in	2004-06-01 22:22:10.000000000 +0000
 @@ -32,7 +32,7 @@
  #
  # MAILDIRPATH - directory name of the maildir directory.
@@ -38,9 +35,8 @@ diff -Nur old/sqwebmail/sqwebmaild.dist.in new/sqwebmail/sqwebmaild.dist.in
  
  ##NAME: AUTHMODULES:0
  #
-diff -Nur old/sqwebmail/sqwebmail.h new/sqwebmail/sqwebmail.h
---- old/sqwebmail/sqwebmail.h	2004-02-29 20:30:56.000000000 +0000
-+++ new/sqwebmail/sqwebmail.h	2004-04-15 11:43:45.000000000 +0000
+--- old/libs/sqwebmail/sqwebmail.h	2004-02-29 20:30:56.000000000 +0000
++++ new/libs/sqwebmail/sqwebmail.h	2004-04-15 11:43:45.000000000 +0000
 @@ -25,7 +25,7 @@
  
  /* Location of the user's Maildir */

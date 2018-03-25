@@ -1,46 +1,56 @@
 #
 # Conditional build:
-%bcond_without	ispell
-%bcond_without	ssl
-%bcond_with	pl
+%bcond_without	ispell	# ispell spell checker support
+%bcond_with	socks	# (Courier) Socks support
+%bcond_without	ssl	# HTTPS support
+%bcond_with	pl	# mgt.pl beautifull patch (outdated)
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl.UTF-8):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	5.0.4
-Release:	5
-License:	GPL
+Version:	5.9.2
+Release:	1
+License:	GPL v3+
 Group:		Applications/Mail
-Source0:	http://dl.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	fee97b3546b954f0307e2d8963be7498
+Source0:	http://downloads.sourceforge.net/courier/%{name}-%{version}.tar.bz2
+# Source0-md5:	57460e57b6660588aad19d4c2817e091
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
 # Source3-md5:	90d67b405d5e9d617c9c60c88aa4acec
 Source4:	%{name}-apache.conf
 Patch0:		%{name}-authpam_patch
+# XXX: ugly; what problem does it fix?
 Patch1:		%{name}-prowizorka.patch
 Patch2:		%{name}-maildir.patch
 Patch3:		%{name}-init.patch
-Patch4:		%{name}-sec_fix.patch
 URL:		http://www.courier-mta.org/sqwebmail/
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	courier-authlib-devel >= 0.57
+%{?with_socks:BuildRequires:	courier-sox-devel}
+BuildRequires:	courier-unicode-devel >= 2.0
 BuildRequires:	db-devel
 BuildRequires:	expect
 BuildRequires:	fam-devel
+# or gnupg2 --with-gpg2
 BuildRequires:	gnupg >= 1.0.4
-# perhaps only because of test sources written in C, but with ".C" extension(?)
+BuildRequires:	libidn-devel >= 0.0.0
 BuildRequires:	libstdc++-devel
-BuildRequires:	libtool
+BuildRequires:	libtool >= 2:1.5
+BuildRequires:	openldap-devel
+BuildRequires:	pcre-devel
+BuildRequires:	perl-base
+BuildRequires:	pkgconfig
 BuildRequires:	procps
 BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sysconftool
 Requires(post,preun):	/sbin/chkconfig
 %{?with_ssl:Requires:	apache(mod_ssl)}
+Requires:	courier-authlib >= 0.57
+Requires:	courier-unicode >= 2.0
 Requires:	crondaemon
 Requires:	expect
 Requires:	filesystem >= 3.0-11
@@ -54,20 +64,19 @@ Conflicts:	apache-base < 2.2.0-8
 Conflicts:	apache1 < 1.3.34-5.11
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define	_libexecdir		/usr/%{_lib}
-%define	_localstatedir		/var/spool/sqwebmail
-%define	_webapps	/etc/webapps
-%define	_webapp		%{name}
-%define	_sysconfdir	%{_webapps}/%{_webapp}
+%define		_localstatedir	/var/spool/sqwebmail
+%define		_webapps	/etc/webapps
+%define		_webapp		%{name}
+%define		_sysconfdir	%{_webapps}/%{_webapp}
 
-%define	cgibindir		%{_prefix}/lib/cgi-bin
-%define	imagedir		%{_datadir}/sqwebmail/images
-%define	imageurl		/webmail
+%define		cgibindir	%{_prefix}/lib/cgi-bin
+%define		imagedir	%{_datadir}/sqwebmail/images
+%define		imageurl	/webmail
 
-%define	cacheowner		bin
-%define	sqwebmailowner		root
-%define	sqwebmailgroup		mail
-%define	sqwebmailperm		555
+%define		cacheowner	bin
+%define		sqwebmailowner	root
+%define		sqwebmailgroup	mail
+%define		sqwebmailperm	555
 
 %description
 SqWebMail is a Webmail CGI for Maildir mailboxes.
@@ -100,90 +109,88 @@ Polish translation.
 Polskie tłumaczenie interfejsu.
 
 %prep
-%setup -q
-install %{SOURCE2} sqwebmail.init.in
+%setup -q %{?with_pl:-a3}
+cp -p %{SOURCE2} sqwebmail.init.in
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
-# Change Makefile.am files and force recreate Makefile.in's.
-OLDDIR=`pwd`
-find -type f -a \( -name configure.in -o -name configure.ac \) | while read FILE; do
-        cd "`dirname "$FILE"`"
-
-        if [ -f Makefile.am ]; then
-                sed -i -e '/_[L]DFLAGS=-static/d' Makefile.am
-        fi
-
-        %{__libtoolize}
-        %{__aclocal}
-        %{__autoconf}
-        %{__autoheader}
-        %{__automake}
-
-        cd "$OLDDIR"
+%{__libtoolize}
+for d in $(sed -ne 's/.*AC_CONFIG_SUBDIRS(\([^)]*\))/\1/p' configure.ac) . ; do
+	cd "$d"
+	sed -i -e '/_[L]DFLAGS=-static/d' Makefile.am
+	%{__aclocal}
+	%{__autoconf}
+	%{__autoheader}
+	%{__automake}
+        cd -
 done
+# depcomp is used by subdirs, but not from top automake, need to install manually
+cp -f /usr/share/automake/depcomp .
 
 %configure \
-	--with-db=db \
 	--enable-cgibindir=%{cgibindir} \
 	%{?with_ssl:--enable-https} \
-	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
-	--enable-mimetypes=/etc/mime.types \
 	--enable-imagedir=%{imagedir} \
 	--enable-imageurl=%{imageurl} \
+	--enable-mimetypes=/etc/mime.types \
 	--with-cachedir=%{_localstatedir}/tmp \
 	--with-cacheowner=%{cacheowner} \
-	--with-mailer=/usr/sbin/sendmail \
-	--with-piddir=/var/run
-%{__make}
+	--with-db=db \
+	--with-formdata \
+	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
+	--with-mailer=/usr/lib/sendmail \
+	--with-piddir=/var/run \
+	%{!?with_socks:--without-socks}
+%{__make} -j1
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{shared,shared.tmp} \
-	$RPM_BUILD_ROOT/etc/{sysconfig,cron.hourly,rc.d/init.d,pam.d} \
-%{?with_pl:$RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/pl-pl}
+	$RPM_BUILD_ROOT/etc/{cron.hourly,pam.d,rc.d/init.d}
 
-%{__make} install \
+%{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
-install sqwebmail.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
-
 %if %{with pl}
-tar zxf %{SOURCE3}
-install sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/pl-pl
+install -d $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/pl-pl
+cp -p sqwebmail-3.4.1-mgt.pl-beautifull_patch/html/pl-pl/* $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/pl-pl
 %endif
 
-rm $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
-cp pcp/README.html pcp_README.html
-echo net >$RPM_BUILD_ROOT%{_sysconfdir}/calendarmode
+install libs/gpglib/webgpg $RPM_BUILD_ROOT%{_sbindir}
 
+# make config file
+./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/*.dist
+%{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/*.dist
+echo net >$RPM_BUILD_ROOT%{_sysconfdir}/calendarmode
 %if %{with ispell}
 touch $RPM_BUILD_ROOT%{_datadir}/sqwebmail/html/en/ISPELLDICT
 %endif
 
-# make config file
-./sysconftool $RPM_BUILD_ROOT%{_sysconfdir}/*.dist
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/*.dist
-
-# delete man pages in conflict with courier-imap
-rm -f $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota*
-rm -f $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
-# these conflict with courier-imap
-rm -f $RPM_BUILD_ROOT%{_sbindir}/sharedindex{install,split}
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/cron.hourly/sqwebmail-cron-cleancache
+install sqwebmail.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sqwebmail
+# obsoleted by .init script
+%{__rm} $RPM_BUILD_ROOT%{_libexecdir}/sqwebmaild.rc
 
 # pam
-cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/webmail
-cp sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/calendar
+cp -p libs/sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/webmail
+cp -p libs/sqwebmail/sqwebmail.pamconf $RPM_BUILD_ROOT/etc/pam.d/calendar
 
 # for apache
-install %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
-install %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -p %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+cp -p %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+
+cp -p libs/gpglib/README.html README_gpglib.html
+cp -p libs/pcp/README.html README_pcp.html
+
+# in courier-imap-maildirmake
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
+# in courier-imap-deliverquota
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota.8*
+# in courier-imap
+%{__rm} $RPM_BUILD_ROOT%{_sbindir}/sharedindex{install,split}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -288,12 +295,9 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS sqwebmail/BUGS INSTALL NEWS README sqwebmail/SECURITY sqwebmail/TODO gpglib/README.html
-%doc sqwebmail/BUGS.html INSTALL.html README.html sqwebmail/SECURITY.html sqwebmail/TODO.html sqwebmail/ChangeLog
-%doc maildir/README*.html gpglib/README.html
-%attr(755,root,root) %{cgibindir}/sqwebmail
-
+%doc AUTHORS COPYING INSTALL NEWS README README_gpglib.html libs/sqwebmail/{BUGS,ChangeLog,SECURITY,TODO} libs/maildir/README.*.html
 %attr(755,root,root) %{_sbindir}/webgpg
+%attr(755,root,root) %{cgibindir}/sqwebmail
 
 %dir %{_libexecdir}/sqwebmail
 %attr(755,root,root) %{_libexecdir}/sqwebmail/deliverquota
@@ -301,7 +305,7 @@ fi
 %attr(755,root,root) %{_libexecdir}/sqwebmail/makemime
 %attr(755,root,root) %{_libexecdir}/sqwebmail/reformime
 %attr(755,root,root) %{_libexecdir}/sqwebmail/sqwebmaild
-%attr(2755, %{sqwebmailowner}, %{sqwebmailgroup}) %{_libexecdir}/sqwebmail/sqwebpasswd
+%attr(2755,%{sqwebmailowner},%{sqwebmailgroup}) %{_libexecdir}/sqwebmail/sqwebpasswd
 
 %dir %{_sysconfdir}
 %attr(755,daemon,daemon) %dir %{_sysconfdir}/shared
@@ -313,8 +317,8 @@ fi
 
 %dir %{_datadir}/sqwebmail
 %dir %{_datadir}/sqwebmail/html
+%ghost %{_datadir}/sqwebmail/html/en
 %dir %{_datadir}/sqwebmail/html/en-us
-%{imagedir}
 %config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/CHARSET
 %config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/LANGUAGE
 %config(noreplace) %verify(not md5 mtime size) %{_datadir}/sqwebmail/html/en-us/LANGUAGE_PREF
@@ -324,20 +328,21 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/webmail
 %{_datadir}/sqwebmail/html/en-us/*.html
 %{_datadir}/sqwebmail/html/en-us/*.txt
+%{imagedir}
 %attr(755,root,root) %{_datadir}/sqwebmail/ldapsearch
 %attr(755,root,root) %{_datadir}/sqwebmail/webgpg
 %attr(755,root,root) %{_datadir}/sqwebmail/sendit.sh
-%attr(755,bin,root) %{_datadir}/sqwebmail/cleancache.pl
+%attr(755,root,root) %{_datadir}/sqwebmail/cleancache.pl
 
 %attr(754,root,root) /etc/rc.d/init.d/sqwebmail
 %attr(755,root,root) /etc/cron.hourly/sqwebmail-cron-cleancache
 
 %attr(771,root,daemon) %dir %{_localstatedir}
-%attr(700,%{cacheowner},bin) %dir %{_localstatedir}/tmp
+%attr(700,%{cacheowner},root) %dir %{_localstatedir}/tmp
 
 %files calendar
 %defattr(644,root,root,755)
-%doc pcp_README.html
+%doc README_pcp.html
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/calendarmode
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/calendar
 %attr(755,root,root) %{_libexecdir}/sqwebmail/pcpd
@@ -349,6 +354,7 @@ fi
 %if %{with pl}
 %files pl_html
 %defattr(644,root,root,755)
+%ghost %{_datadir}/sqwebmail/html/pl
 %dir %{_datadir}/sqwebmail/html/pl-pl
 %{_datadir}/sqwebmail/html/pl-pl/*.html
 %{_datadir}/sqwebmail/html/pl-pl/*.txt

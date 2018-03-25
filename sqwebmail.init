@@ -6,7 +6,7 @@
 #
 # description:	SqWebMail is a Webmail CGI for Maildir mailboxes.
 
-DIR="@libexecdir@"
+libexecdir="@libexecdir@"
 sysconfdir="@sysconfdir@"
 sbindir="@sbindir@"
 
@@ -40,7 +40,7 @@ case "$1" in
 	        net)
 		msg_starting pcpd
 	        daemon $sbindir/courierlogger -pid=$PIDFILE.pcp -start \
-		$DIR/sqwebmail/pcpd server
+		$libexecdir/sqwebmail/pcpd server
 	        ;;
 	        *)
 	        ;;
@@ -48,7 +48,7 @@ case "$1" in
 
 		msg_starting sqwebmail
 	        daemon $sbindir/courierlogger -pid=$PIDFILE -start \
-		$DIR/sqwebmail/sqwebmaild
+		$libexecdir/sqwebmail/sqwebmaild
 
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/sqwebmail
