@@ -25,6 +25,7 @@ Patch0:		%{name}-authpam_patch
 Patch1:		%{name}-prowizorka.patch
 Patch2:		%{name}-maildir.patch
 Patch3:		%{name}-init.patch
+Patch4:		%{name}-disable-courierlogger-check.patch
 URL:		http://www.courier-mta.org/sqwebmail/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -115,6 +116,7 @@ cp -p %{SOURCE2} sqwebmail.init.in
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 %{__libtoolize}
