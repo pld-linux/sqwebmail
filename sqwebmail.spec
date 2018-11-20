@@ -9,12 +9,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl.UTF-8):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	5.9.3
+Version:	6.0.0
 Release:	1
 License:	GPL v3+
 Group:		Applications/Mail
 Source0:	http://downloads.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	c839e7417de6ccadb1db0743585d07ad
+# Source0-md5:	c67718828e5d8a541ae3fd575cdeb535
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
@@ -31,7 +31,7 @@ BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	courier-authlib-devel >= 0.57
 %{?with_socks:BuildRequires:	courier-sox-devel}
-BuildRequires:	courier-unicode-devel >= 2.0
+BuildRequires:	courier-unicode-devel >= 2.1
 BuildRequires:	db-devel
 BuildRequires:	expect
 BuildRequires:	fam-devel
@@ -51,7 +51,7 @@ BuildRequires:	sysconftool
 Requires(post,preun):	/sbin/chkconfig
 %{?with_ssl:Requires:	apache(mod_ssl)}
 Requires:	courier-authlib >= 0.57
-Requires:	courier-unicode >= 2.0
+Requires:	courier-unicode >= 2.1
 Requires:	crondaemon
 Requires:	expect
 Requires:	filesystem >= 3.0-11
@@ -63,6 +63,8 @@ Requires:	webapps
 Requires:	webserver = apache
 Conflicts:	apache-base < 2.2.0-8
 Conflicts:	apache1 < 1.3.34-5.11
+Conflicts:	courier-imap < 5
+Conflicts:	courier-imapd < 1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_localstatedir	/var/spool/sqwebmail
@@ -144,6 +146,7 @@ cp -f /usr/share/automake/depcomp .
 	--with-formdata \
 	%{?with_ispell:--with-ispell=/usr/bin/ispell} \
 	--with-mailer=/usr/lib/sendmail \
+	--with-notice=unicode \
 	--with-piddir=/var/run \
 	%{!?with_socks:--without-socks}
 %{__make} -j1
@@ -294,6 +297,12 @@ if [ "$apache_reload" ]; then
 	/usr/sbin/webapp register apache %{_webapp}
 	%service apache reload
 fi
+
+%triggerpostun -- %{name} < 6
+%banner -o sqwebmail-unicode <<EOF
+WARNING: you have to convert any existing maildirs to Unicode naming scheme.
+See INSTALL file for details.
+EOF
 
 %files
 %defattr(644,root,root,755)
