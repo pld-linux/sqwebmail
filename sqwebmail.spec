@@ -299,7 +299,7 @@ if [ "$apache_reload" ]; then
 fi
 
 %triggerpostun -- %{name} < 6
-%banner -o sqwebmail-unicode <<EOF
+%banner -e sqwebmail-unicode <<EOF
 WARNING: you have to convert any existing maildirs to Unicode naming scheme.
 See INSTALL file for details.
 EOF
