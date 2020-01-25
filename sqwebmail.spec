@@ -5,7 +5,6 @@
 %bcond_without	ssl	# HTTPS support
 %bcond_with	pl	# mgt.pl beautifull patch (outdated)
 #
-%include	/usr/lib/rpm/macros.perl
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl.UTF-8):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
