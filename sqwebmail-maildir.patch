@@ -26,14 +26,14 @@
  	return (0);
 --- old/libs/sqwebmail/sqwebmaild.dist.in	2004-05-09 03:32:01.000000000 +0000
 +++ new/libs/sqwebmail/sqwebmaild.dist.in	2004-06-01 22:22:10.000000000 +0000
-@@ -32,7 +32,7 @@
+@@ -32,7 +32,7 @@ DEBUG_LOGIN=0
  #
  # MAILDIRPATH - directory name of the maildir directory.
  
 -MAILDIRPATH=Maildir
 +MAILDIRPATH=Mail/Maildir
  
- ##NAME: AUTHMODULES:0
+ ##NAME: SQWEBMAIL_PREFORK:0
  #
 --- old/libs/sqwebmail/sqwebmail.h	2004-02-29 20:30:56.000000000 +0000
 +++ new/libs/sqwebmail/sqwebmail.h	2004-04-15 11:43:45.000000000 +0000

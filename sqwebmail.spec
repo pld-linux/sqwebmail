@@ -8,12 +8,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl.UTF-8):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	6.0.0
-Release:	2
+Version:	6.0.9
+Release:	1
 License:	GPL v3+
 Group:		Applications/Mail
 Source0:	http://downloads.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	c67718828e5d8a541ae3fd575cdeb535
+# Source0-md5:	e5ad7fc02626ce49061ad031f50c7cb7
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
@@ -28,7 +28,7 @@ Patch4:		%{name}-disable-courierlogger-check.patch
 URL:		http://www.courier-mta.org/sqwebmail/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
-BuildRequires:	courier-authlib-devel >= 0.57
+BuildRequires:	courier-authlib-devel >= 0.71
 %{?with_socks:BuildRequires:	courier-sox-devel}
 BuildRequires:	courier-unicode-devel >= 2.1
 BuildRequires:	db-devel
@@ -49,7 +49,7 @@ BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sysconftool
 Requires(post,preun):	/sbin/chkconfig
 %{?with_ssl:Requires:	apache(mod_ssl)}
-Requires:	courier-authlib >= 0.57
+Requires:	courier-authlib >= 0.71
 Requires:	courier-unicode >= 2.1
 Requires:	crondaemon
 Requires:	expect
@@ -257,7 +257,8 @@ echo "echo 'pl-pl' > %{_datadir}/sqwebmail/html/en/LANGUAGE"
 %triggerun -- apache < 2.2.0, apache-base
 %webapp_unregister httpd %{_webapp}
 
-%triggerpostun -- %{name} < 5.0.4-1.1
+%triggerpostun -- %{name} < 6
+# 5.0.4-1.1
 # rescue app configs
 for i in ldapaddressbook sqwebmaild; do
 	if [ -f /etc/%{name}/$i.rpmsave ]; then
@@ -297,7 +298,7 @@ if [ "$apache_reload" ]; then
 	%service apache reload
 fi
 
-%triggerpostun -- %{name} < 6
+# 6
 %banner -e sqwebmail-unicode <<EOF
 WARNING: you have to convert any existing maildirs to Unicode naming scheme.
 See INSTALL file for details.
