@@ -8,12 +8,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl.UTF-8):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	6.0.9
+Version:	6.1.0
 Release:	1
 License:	GPL v3+
 Group:		Applications/Mail
-Source0:	http://downloads.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	e5ad7fc02626ce49061ad031f50c7cb7
+Source0:	https://downloads.sourceforge.net/courier/%{name}-%{version}.tar.bz2
+# Source0-md5:	c982332b0c642468f72df28eba6c5fbc
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
@@ -36,11 +36,11 @@ BuildRequires:	expect
 BuildRequires:	fam-devel
 # or gnupg2 --with-gpg2
 BuildRequires:	gnupg >= 1.0.4
-BuildRequires:	libidn-devel >= 0.0.0
+BuildRequires:	libidn2-devel >= 0.0.0
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.5
 BuildRequires:	openldap-devel
-BuildRequires:	pcre-devel
+BuildRequires:	pcre2-8-devel
 BuildRequires:	perl-base
 BuildRequires:	pkgconfig
 BuildRequires:	procps
@@ -189,10 +189,6 @@ cp -p %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 cp -p libs/gpglib/README.html README_gpglib.html
 cp -p libs/pcp/README.html README_pcp.html
 
-# in courier-imap-maildirmake
-%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/maildirmake.1
-# in courier-imap-deliverquota
-%{__rm} $RPM_BUILD_ROOT%{_mandir}/man8/deliverquota.8*
 # in courier-imap
 %{__rm} $RPM_BUILD_ROOT%{_sbindir}/sharedindex{install,split}
 
