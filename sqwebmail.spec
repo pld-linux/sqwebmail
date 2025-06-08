@@ -8,12 +8,12 @@
 Summary:	SqWebMail - Maildir Webmail CGI client
 Summary(pl.UTF-8):	SqWebMail - Klient pocztowy CGI dla skrzynek Maildir
 Name:		sqwebmail
-Version:	6.1.0
+Version:	6.2.9
 Release:	1
 License:	GPL v3+
 Group:		Applications/Mail
 Source0:	https://downloads.sourceforge.net/courier/%{name}-%{version}.tar.bz2
-# Source0-md5:	c982332b0c642468f72df28eba6c5fbc
+# Source0-md5:	bd94290cc2303656db1951aeb0754aa1
 Source1:	%{name}-cron-cleancache
 Source2:	%{name}.init
 Source3:	%{name}-3.4.1-mgt.pl-beautifull_patch.tgz
@@ -36,9 +36,9 @@ BuildRequires:	expect
 BuildRequires:	fam-devel
 # or gnupg2 --with-gpg2
 BuildRequires:	gnupg >= 1.0.4
-BuildRequires:	libidn2-devel >= 0.0.0
+BuildRequires:	libidn2-devel >= 2.0.5
 BuildRequires:	libstdc++-devel
-BuildRequires:	libtool >= 2:1.5
+BuildRequires:	libtool >= 2:2
 BuildRequires:	openldap-devel
 BuildRequires:	pcre2-8-devel
 BuildRequires:	perl-base
@@ -56,6 +56,7 @@ Requires:	expect
 Requires:	filesystem >= 3.0-11
 Requires:	gnupg >= 1.0.4
 %{?with_ispell:Requires:	ispell}
+Requires:	libidn2 >= 2.0.5
 Requires:	mailcap
 Requires:	rc-scripts
 Requires:	webapps
@@ -120,13 +121,17 @@ cp -p %{SOURCE2} sqwebmail.init.in
 %patch -P4 -p1
 
 %build
-%{__libtoolize}
-for d in $(sed -ne 's/.*AC_CONFIG_SUBDIRS(\([^)]*\))/\1/p' configure.ac) . ; do
+for d in $(sed -ne '/^AC_CONFIG_SUBDIRS(/,/.*)$/p' configure.ac | sed -e 's/.*AC_CONFIG_SUBDIRS(\|)$//') . ; do
 	cd "$d"
 	sed -i -e '/_[L]DFLAGS=-static/d' Makefile.am
-	%{__aclocal}
+	if grep -q '^LT_INIT' configure.ac ; then
+		%{__libtoolize}
+	fi
+	%{__aclocal} $(test ! -d m4 || echo -I m4)
 	%{__autoconf}
-	%{__autoheader}
+	if grep -q AC_CONFIG_HEADER configure.ac ; then
+		%{__autoheader}
+	fi
 	%{__automake}
         cd -
 done
